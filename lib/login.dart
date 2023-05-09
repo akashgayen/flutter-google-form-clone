@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gform/signup.dart';
+import 'package:gform/forgotpass.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
@@ -217,7 +219,14 @@ class _MyLoginState extends State<MyLogin> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPass(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       "Forgot password?",
                       style: TextStyle(
@@ -275,7 +284,14 @@ class _MyLoginState extends State<MyLogin> {
                     ),
                   ),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUp(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       "Sign up",
                       textWidthBasis: TextWidthBasis.longestLine,

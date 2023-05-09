@@ -21,7 +21,11 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(child: Text("USER LOGGED IN")),
+      body: const Center(
+        child: Text(
+          "USER LOGGED IN",
+        ),
+      ),
     );
   }
 }
