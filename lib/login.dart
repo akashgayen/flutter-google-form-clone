@@ -2,12 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gform/signup.dart';
 import 'package:gform/forgotpass.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
 
   @override
   State<MyLogin> createState() => _MyLoginState();
+}
+
+class GoogleAuth {
+  googleSignin() async {
+    final GoogleSignInAccount? user = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication auth = await user!.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 }
 
 class _MyLoginState extends State<MyLogin> {
@@ -354,6 +367,25 @@ class _MyLoginState extends State<MyLogin> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () => GoogleAuth().googleSignin(),
+                child: Container(
+                  height: 85,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 43, 47, 58),
+                    border: Border.all(
+                      color: Colors.white,
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                  ),
+                  child: Image.asset('assets/images/google-logo.png'),
+                ),
+              )
             ],
           ),
         ),
