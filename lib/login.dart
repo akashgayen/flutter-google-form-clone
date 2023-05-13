@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gform/signup.dart';
+import 'package:flutter/material.dart';
 import 'package:gform/forgotpass.dart';
+import 'package:gform/signup.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sizer/sizer.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
@@ -44,7 +47,7 @@ class _MyLoginState extends State<MyLogin> {
         email: emailController.text,
         password: passwordController.text,
       );
-      // ignore: use_build_context_synchronously
+
       Navigator.pop(context);
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found') {
@@ -75,321 +78,319 @@ class _MyLoginState extends State<MyLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: const Color.fromARGB(255, 35, 37, 43),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "Welcome\nto Forms!",
-                      style: TextStyle(
-                        fontFamily: 'ComfortaaBold',
-                        color: Colors.white,
-                        fontSize: 52,
-                        fontWeight: FontWeight.bold,
+    return Sizer(
+      builder: (context, orientation, deviceType) {
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: const Color.fromARGB(255, 35, 37, 43),
+          body: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    height: 3.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Welcome\nto Forms!",
+                        style: TextStyle(
+                          fontFamily: 'ComfortaaBold',
+                          color: Colors.white,
+                          fontSize: 45.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Image.asset(
+                    'assets/images/gformlogo.png',
+                    width: 50.w,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Image.asset(
-                'assets/images/gformlogo.png',
-                width: 180,
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                ),
-                child: Row(
-                  children: const [
-                    Text(
-                      "Sign in",
+                    child: Row(
+                      children: [
+                        Text(
+                          "Sign in",
+                          style: TextStyle(
+                            fontFamily: 'Comfortaa',
+                            color: Colors.white,
+                            fontSize: 20.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                    ),
+                    child: TextField(
+                      focusNode: emailfield,
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      cursorColor: const Color.fromARGB(255, 28, 95, 255),
+                      autocorrect: true,
                       style: TextStyle(
+                        color: Colors.white,
                         fontFamily: 'Comfortaa',
+                        fontSize: 14.8.sp,
+                      ),
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                          borderSide: BorderSide(
+                            width: 2.5.sp,
+                            color: const Color.fromARGB(255, 66, 70, 81),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(17),
+                          ),
+                          borderSide: BorderSide(
+                            width: 2.5.sp,
+                            color: const Color.fromARGB(255, 28, 95, 255),
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 43, 47, 58),
+                        hintText: 'Email',
+                        hintStyle: const TextStyle(
+                          fontFamily: 'Comfortaa',
+                          color: Color.fromARGB(255, 114, 121, 132),
+                        ),
+                      ),
+                      onSubmitted: (value) {
+                        FocusScope.of(context).requestFocus(passwordfield);
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                    ),
+                    child: TextField(
+                      focusNode: passwordfield,
+                      controller: passwordController,
+                      obscureText: hidePassword,
+                      keyboardType: TextInputType.visiblePassword,
+                      cursorColor: const Color.fromARGB(255, 28, 95, 255),
+                      autocorrect: false,
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontFamily: 'Comfortaa',
+                        fontSize: 14.8.sp,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                ),
-                child: TextField(
-                  focusNode: emailfield,
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  cursorColor: const Color.fromARGB(255, 28, 95, 255),
-                  cursorHeight: 25,
-                  autocorrect: true,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Comfortaa',
-                    fontSize: 19,
-                  ),
-                  decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      borderSide: BorderSide(
-                        width: 3,
-                        color: Color.fromARGB(255, 66, 70, 81),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(17),
-                      ),
-                      borderSide: BorderSide(
-                        width: 3,
-                        color: Color.fromARGB(255, 28, 95, 255),
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 43, 47, 58),
-                    hintText: 'Email',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Comfortaa',
-                      color: Color.fromARGB(255, 114, 121, 132),
-                    ),
-                  ),
-                  onSubmitted: (value) {
-                    FocusScope.of(context).requestFocus(passwordfield);
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 13,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                ),
-                child: TextField(
-                  focusNode: passwordfield,
-                  controller: passwordController,
-                  obscureText: hidePassword,
-                  keyboardType: TextInputType.visiblePassword,
-                  cursorColor: const Color.fromARGB(255, 28, 95, 255),
-                  cursorHeight: 25,
-                  autocorrect: false,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Comfortaa',
-                    fontSize: 19,
-                  ),
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        hidePassword ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(
-                          () {
-                            hidePassword = !hidePassword;
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            hidePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(
+                              () {
+                                hidePassword = !hidePassword;
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      borderSide: BorderSide(
-                        width: 3,
-                        color: Color.fromARGB(255, 66, 70, 81),
-                      ),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(17),
-                      ),
-                      borderSide: BorderSide(
-                        width: 3,
-                        color: Color.fromARGB(255, 28, 95, 255),
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 43, 47, 58),
-                    hintText: 'Password',
-                    hintStyle: const TextStyle(
-                      fontFamily: 'Comfortaa',
-                      color: Color.fromARGB(255, 114, 121, 132),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ForgotPass(),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "Forgot password?",
-                        style: TextStyle(
+                          borderSide: BorderSide(
+                            width: 2.5.sp,
+                            color: const Color.fromARGB(255, 66, 70, 81),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(17),
+                          ),
+                          borderSide: BorderSide(
+                            width: 2.5.sp,
+                            color: const Color.fromARGB(255, 28, 95, 255),
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: const Color.fromARGB(255, 43, 47, 58),
+                        hintText: 'Password',
+                        hintStyle: const TextStyle(
                           fontFamily: 'Comfortaa',
-                          fontSize: 15,
-                          color: Color.fromARGB(255, 28, 95, 255),
+                          color: Color.fromARGB(255, 114, 121, 132),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                ),
-                child: SizedBox(
-                  height: 50,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: signIn,
-                    style: const ButtonStyle(
-                      iconColor: MaterialStatePropertyAll(
-                        Color.fromARGB(255, 28, 95, 255),
-                      ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
                     ),
-                    child: const Text(
-                      "Submit",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontFamily: 'Comfortaa',
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPass(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Forgot password?",
+                            style: TextStyle(
+                              fontFamily: 'Comfortaa',
+                              fontSize: 12.sp,
+                              color: const Color.fromARGB(255, 28, 95, 255),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "First time here?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontFamily: 'Comfortaa',
-                      ),
+                  SizedBox(
+                    height: 0.5.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
                     ),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignUp(),
+                    child: SizedBox(
+                      height: 6.h,
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: signIn,
+                        style: const ButtonStyle(
+                          iconColor: MaterialStatePropertyAll(
+                            Color.fromARGB(255, 28, 95, 255),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "Sign up",
-                        textWidthBasis: TextWidthBasis.longestLine,
-                        style: TextStyle(
-                          fontFamily: 'Comfortaa',
-                          fontSize: 17,
-                          color: Color.fromARGB(255, 28, 95, 255),
+                        ),
+                        child: Text(
+                          "Submit",
+                          style: TextStyle(
+                            fontSize: 23.sp,
+                            fontFamily: 'Comfortaa',
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                ),
-                child: Row(
-                  children: const [
-                    Expanded(
-                      child: Divider(
-                        color: Color.fromARGB(255, 28, 95, 255),
-                        thickness: 2,
-                      ),
-                    ),
-                    Text(
-                      "  Or continue with  ",
-                      style: TextStyle(
-                        fontFamily: 'Comfortaa',
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Color.fromARGB(255, 28, 95, 255),
-                        thickness: 2,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                onTap: () => GoogleAuth().googleSignin(),
-                child: Container(
-                  height: 85,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 43, 47, 58),
-                    border: Border.all(
-                      color: Colors.white,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      16,
+                  ),
+                  SizedBox(
+                    height: 7.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "First time here?",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignUp(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Sign up",
+                            textWidthBasis: TextWidthBasis.longestLine,
+                            style: TextStyle(
+                              fontFamily: 'Comfortaa',
+                              fontSize: 14.sp,
+                              color: const Color.fromARGB(255, 28, 95, 255),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Image.asset('assets/images/google-logo.png'),
-                ),
-              )
-            ],
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 7.5.w,
+                    ),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(
+                            color: Color.fromARGB(255, 28, 95, 255),
+                            thickness: 2,
+                          ),
+                        ),
+                        Text(
+                          "  Or continue with  ",
+                          style: TextStyle(
+                            fontFamily: 'Comfortaa',
+                            fontSize: 11.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(
+                            color: Color.fromARGB(255, 28, 95, 255),
+                            thickness: 2,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                    onTap: () => GoogleAuth().googleSignin(),
+                    child: Container(
+                      height: 10.h,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 43, 47, 58),
+                        border: Border.all(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          16,
+                        ),
+                      ),
+                      child: Image.asset('assets/images/google-logo.png'),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
