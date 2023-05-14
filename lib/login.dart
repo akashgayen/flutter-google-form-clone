@@ -100,7 +100,7 @@ class _MyLoginState extends State<MyLogin> {
                         style: TextStyle(
                           fontFamily: 'ComfortaaBold',
                           color: Colors.white,
-                          fontSize: 45.sp,
+                          fontSize: 40.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -127,7 +127,7 @@ class _MyLoginState extends State<MyLogin> {
                           style: TextStyle(
                             fontFamily: 'Comfortaa',
                             color: Colors.white,
-                            fontSize: 20.sp,
+                            fontSize: 17.sp,
                           ),
                         ),
                       ],
@@ -143,13 +143,14 @@ class _MyLoginState extends State<MyLogin> {
                     child: TextField(
                       focusNode: emailfield,
                       controller: emailController,
+                      enableSuggestions: true,
                       keyboardType: TextInputType.emailAddress,
                       cursorColor: const Color.fromARGB(255, 28, 95, 255),
                       autocorrect: true,
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Comfortaa',
-                        fontSize: 14.8.sp,
+                        fontSize: 12.8.sp,
                       ),
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
@@ -200,7 +201,7 @@ class _MyLoginState extends State<MyLogin> {
                       style: TextStyle(
                         color: Colors.white,
                         fontFamily: 'Comfortaa',
-                        fontSize: 14.8.sp,
+                        fontSize: 12.8.sp,
                       ),
                       decoration: InputDecoration(
                         suffixIcon: IconButton(
@@ -265,7 +266,7 @@ class _MyLoginState extends State<MyLogin> {
                             "Forgot password?",
                             style: TextStyle(
                               fontFamily: 'Comfortaa',
-                              fontSize: 12.sp,
+                              fontSize: 11.sp,
                               color: const Color.fromARGB(255, 28, 95, 255),
                             ),
                           ),
@@ -281,7 +282,7 @@ class _MyLoginState extends State<MyLogin> {
                       horizontal: 10.w,
                     ),
                     child: SizedBox(
-                      height: 6.h,
+                      height: 47,
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: signIn,
@@ -293,7 +294,7 @@ class _MyLoginState extends State<MyLogin> {
                         child: Text(
                           "Submit",
                           style: TextStyle(
-                            fontSize: 23.sp,
+                            fontSize: 20.sp,
                             fontFamily: 'Comfortaa',
                             fontWeight: FontWeight.bold,
                           ),
@@ -311,7 +312,7 @@ class _MyLoginState extends State<MyLogin> {
                           "First time here?",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14.sp,
+                            fontSize: 12.sp,
                             fontFamily: 'Comfortaa',
                           ),
                         ),
@@ -329,7 +330,7 @@ class _MyLoginState extends State<MyLogin> {
                             textWidthBasis: TextWidthBasis.longestLine,
                             style: TextStyle(
                               fontFamily: 'Comfortaa',
-                              fontSize: 14.sp,
+                              fontSize: 12.sp,
                               color: const Color.fromARGB(255, 28, 95, 255),
                             ),
                           ),
@@ -353,7 +354,7 @@ class _MyLoginState extends State<MyLogin> {
                           "  Or continue with  ",
                           style: TextStyle(
                             fontFamily: 'Comfortaa',
-                            fontSize: 11.sp,
+                            fontSize: 10.sp,
                             color: Colors.white,
                           ),
                         ),
@@ -372,7 +373,7 @@ class _MyLoginState extends State<MyLogin> {
                   GestureDetector(
                     onTap: () => GoogleAuth().googleSignin(),
                     child: Container(
-                      height: 10.h,
+                      height: 9.h,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 43, 47, 58),
                         border: Border.all(
@@ -384,7 +385,10 @@ class _MyLoginState extends State<MyLogin> {
                       ),
                       child: Image.asset('assets/images/google-logo.png'),
                     ),
-                  )
+                  ),
+                  const SizedBox(
+                    height: double.minPositive,
+                  ),
                 ],
               ),
             ),
