@@ -2,6 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gform/login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sizer/sizer.dart';
 
 class SignUp extends StatefulWidget {
@@ -9,6 +11,18 @@ class SignUp extends StatefulWidget {
 
   @override
   State<SignUp> createState() => _SignUpState();
+}
+
+class GoogleAuth {
+  googleSignin() async {
+    final GoogleSignInAccount? user = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication auth = await user!.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 }
 
 class _SignUpState extends State<SignUp> {
@@ -27,12 +41,14 @@ class _SignUpState extends State<SignUp> {
       },
     );
     try {
-      if (passwordController == confirmPasswordController) {
+      if (passwordController.text == confirmPasswordController.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
-          password: passwordController.text,
+          password: confirmPasswordController.text,
         );
+        Navigator.pop(context);
       } else {
+        Navigator.pop(context);
         showDialog(
           context: context,
           builder: (builder) {
@@ -42,35 +58,30 @@ class _SignUpState extends State<SignUp> {
           },
         );
       }
-      Navigator.pop(context);
     } on FirebaseAuthException catch (error) {
+      Navigator.pop(context);
       if (error.code == 'email-already-in-use') {
-        Navigator.pop(context);
         showDialog(
           context: context,
-          builder: (context) {
+          builder: (builder) {
             return const AlertDialog(
-              title: Text(
-                "Email already registered!",
-              ),
+              title: Text("Email is already registered!"),
             );
           },
         );
       } else if (error.code == 'invalid-email') {
-        Navigator.pop(context);
         showDialog(
           context: context,
-          builder: (context) {
+          builder: (builder) {
             return const AlertDialog(
               title: Text("Email is invalid!"),
             );
           },
         );
       } else if (error.code == 'weak-password') {
-        Navigator.pop(context);
         showDialog(
           context: context,
-          builder: (context) {
+          builder: (builder) {
             return const AlertDialog(
               title: Text("Password is too weak!"),
             );
@@ -88,7 +99,6 @@ class _SignUpState extends State<SignUp> {
           resizeToAvoidBottomInset: true,
           backgroundColor: const Color.fromARGB(255, 35, 37, 43),
           body: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +156,6 @@ class _SignUpState extends State<SignUp> {
                     ),
                     child: TextField(
                       controller: emailController,
-                      autofocus: true,
                       enableSuggestions: true,
                       keyboardType: TextInputType.emailAddress,
                       cursorColor: const Color.fromARGB(255, 28, 95, 255),
@@ -325,7 +334,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                         child: Text(
-                          "Submit",
+                          "Sign Up",
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontFamily: 'Comfortaa',
@@ -333,6 +342,94 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 7.5.w,
+                    ),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(
+                            color: Color.fromARGB(255, 28, 95, 255),
+                            thickness: 2,
+                          ),
+                        ),
+                        Text(
+                          "  Or continue with  ",
+                          style: TextStyle(
+                            fontFamily: 'Comfortaa',
+                            fontSize: 10.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(
+                            color: Color.fromARGB(255, 28, 95, 255),
+                            thickness: 2,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                    onTap: () => GoogleAuth().googleSignin(),
+                    child: Container(
+                      height: 9.h,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 43, 47, 58),
+                        border: Border.all(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          16,
+                        ),
+                      ),
+                      child: Image.asset('assets/images/google-logo.png'),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: double.minPositive,
+                  ),
+                  SizedBox(
+                    height: 7.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Already have an account?",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                        OutlinedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MyLogin(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Login",
+                            textWidthBasis: TextWidthBasis.longestLine,
+                            style: TextStyle(
+                              fontFamily: 'Comfortaa',
+                              fontSize: 12.sp,
+                              color: const Color.fromARGB(255, 28, 95, 255),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

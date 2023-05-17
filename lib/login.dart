@@ -72,8 +72,7 @@ class _MyLoginState extends State<MyLogin> {
             );
           },
         );
-      }
-      else if (error.code == 'invalid-email') {
+      } else if (error.code == 'invalid-email') {
         Navigator.pop(context);
         showDialog(
           context: context,
@@ -83,8 +82,7 @@ class _MyLoginState extends State<MyLogin> {
             );
           },
         );
-      }
-      else if (error.code == 'user-disabled') {
+      } else if (error.code == 'user-disabled') {
         Navigator.pop(context);
         showDialog(
           context: context,
@@ -103,10 +101,9 @@ class _MyLoginState extends State<MyLogin> {
     return Sizer(
       builder: (context, orientation, deviceType) {
         return Scaffold(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           backgroundColor: const Color.fromARGB(255, 35, 37, 43),
           body: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
