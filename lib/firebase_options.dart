@@ -67,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '429595889852',
     projectId: 'glug-gforms-clone',
     storageBucket: 'glug-gforms-clone.appspot.com',
-    iosClientId: '429595889852-14fqpnao1hesurc7cug8q4kc89rm3t8s.apps.googleusercontent.com',
+    iosClientId:
+        '429595889852-14fqpnao1hesurc7cug8q4kc89rm3t8s.apps.googleusercontent.com',
     iosBundleId: 'com.example.gform',
   );
 
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '429595889852',
     projectId: 'glug-gforms-clone',
     storageBucket: 'glug-gforms-clone.appspot.com',
-    iosClientId: '429595889852-14fqpnao1hesurc7cug8q4kc89rm3t8s.apps.googleusercontent.com',
+    iosClientId:
+        '429595889852-14fqpnao1hesurc7cug8q4kc89rm3t8s.apps.googleusercontent.com',
     iosBundleId: 'com.example.gform',
   );
 }

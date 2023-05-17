@@ -73,6 +73,28 @@ class _MyLoginState extends State<MyLogin> {
           },
         );
       }
+      else if (error.code == 'invalid-email') {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text("Email is invalid!"),
+            );
+          },
+        );
+      }
+      else if (error.code == 'user-disabled') {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text("Account has been disabled!"),
+            );
+          },
+        );
+      }
     }
   }
 
