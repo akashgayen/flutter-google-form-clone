@@ -405,8 +405,8 @@ class _MyLoginState extends State<MyLogin> {
                       child: Image.asset('assets/images/google-logo.png'),
                     ),
                   ),
-                  const SizedBox(
-                    height: double.minPositive,
+                  SizedBox(
+                    height: 1.h,
                   ),
                 ],
               ),
