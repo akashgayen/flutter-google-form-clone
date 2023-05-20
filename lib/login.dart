@@ -392,7 +392,7 @@ class _MyLoginState extends State<MyLogin> {
                   GestureDetector(
                     onTap: () => GoogleAuth().googleSignin(),
                     child: Container(
-                      height: 9.h,
+                      height: 70,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 43, 47, 58),
                         border: Border.all(
