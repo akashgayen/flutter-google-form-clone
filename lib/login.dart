@@ -34,75 +34,72 @@ class _MyLoginState extends State<MyLogin> {
           backgroundColor: const Color.fromARGB(255, 35, 37, 43),
           body: SingleChildScrollView(
             child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 7.5.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      height: 9.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Welcome\nto Forms!",
-                          style: TextStyle(
-                            fontFamily: 'ComfortaaBold',
-                            color: Colors.white,
-                            fontSize: 50.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    height: 9.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Welcome\nto Forms!",
+                        style: TextStyle(
+                          fontFamily: 'ComfortaaBold',
+                          color: Colors.white,
+                          fontSize: 50.sp,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    Image.asset(
-                      'assets/images/gformlogo.png',
-                      width: 50.w,
-                    ),
-                    SizedBox(
-                      height: 4.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Authenticate with Google",
-                          style: TextStyle(
-                            fontFamily: 'Comfortaa',
-                            color: Colors.white,
-                            fontSize: 20.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 3.h,
-                    ),
-                    GestureDetector(
-                      onTap: () => GoogleAuth().googleSignin(),
-                      child: Container(
-                        height: 10.h,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 43, 47, 58),
-                          border: Border.all(
-                            color: Colors.white,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                            16,
-                          ),
-                        ),
-                        child: Image.asset('assets/images/google-logo.png'),
                       ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Image.asset(
+                    'assets/images/gformlogo.png',
+                    width: 50.w,
+                  ),
+                  SizedBox(
+                    height: 4.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Authenticate with Google",
+                        style: TextStyle(
+                          fontFamily: 'Comfortaa',
+                          color: Colors.white,
+                          fontSize: 20.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 3.h,
+                  ),
+                  GestureDetector(
+                    onTap: () => GoogleAuth().googleSignin(),
+                    child: Container(
+                      height: 10.h,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 43, 47, 58),
+                        border: Border.all(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          16,
+                        ),
+                      ),
+                      child: Image.asset('assets/images/google-logo.png'),
                     ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                ],
               ),
             ),
           ),
