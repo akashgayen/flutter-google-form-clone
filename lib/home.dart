@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'makeform.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -88,7 +89,13 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 17.sp,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FormApp()),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: Icon(

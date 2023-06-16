@@ -41,6 +41,8 @@ dependencies:
   google_sign_in: ^6.1.0
   sizer: ^2.0.15
   auto_size_text: ^3.0.0
+  cloud_firestore: ^4.8.1
+  cloud_functions: ^4.3.3
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sizer/sizer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
@@ -13,14 +15,38 @@ class MyLogin extends StatefulWidget {
 }
 
 class GoogleAuth {
-  googleSignin() async {
+  Future<UserCredential?> googleSignIn() async {
     final GoogleSignInAccount? user = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication auth = await user!.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: auth.accessToken,
       idToken: auth.idToken,
     );
-    return FirebaseAuth.instance.signInWithCredential(credential);
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Save the user's email to Firestore
+      saveUserEmailToFirestore(userCredential.user?.email);
+      print('EMAIL SAVED!!!');
+
+      return userCredential;
+    } catch (error) {
+      print('Error signing in with Google: $error');
+      return null;
+    }
+  }
+
+  Future<void> saveUserEmailToFirestore(String? email) async {
+    if (email != null) {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .set({'email': email}, SetOptions(merge: true));
+    }
   }
 }
 
@@ -81,7 +107,7 @@ class _MyLoginState extends State<MyLogin> {
                     height: 3.h,
                   ),
                   GestureDetector(
-                    onTap: () => GoogleAuth().googleSignin(),
+                    onTap: () => GoogleAuth().googleSignIn(),
                     child: Container(
                       height: 10.h,
                       decoration: BoxDecoration(
