@@ -21,7 +21,7 @@ class _FormAppState extends State<FormApp> {
 
   List<Question> questions = [];
   String? formDocId;
-  String? formTitle;
+  String? formTitle = 'Untitled form';
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +43,16 @@ class _FormAppState extends State<FormApp> {
         padding: const EdgeInsets.all(16.0),
         children: [
           ListTile(
-            title: TextFormField(
+            title: TextField(
+              onEditingComplete: () {
+                saveFormToFirestore();
+                FocusScope.of(context).unfocus();
+              },
+              autofocus: false,
               autocorrect: true,
               cursorColor: const Color.fromARGB(255, 28, 95, 255),
               onChanged: (value) {
-                formTitle = value;
+                formTitle = value.isEmpty ? 'Untitled Form' : value;
               },
               style: TextStyle(
                 color: Colors.white,
@@ -82,7 +87,7 @@ class _FormAppState extends State<FormApp> {
               ),
             ),
             trailing: TextButton(
-              onPressed: saveFormTitleToFirestore,
+              onPressed: saveFormToFirestore,
               child: Text(
                 'SAVE',
                 style: TextStyle(
@@ -100,6 +105,14 @@ class _FormAppState extends State<FormApp> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 13.sp,
+                  fontFamily: 'Comfortaa',
+                ),
+              ),
+              subtitle: Text(
+                'Response Type: ${questions[i].responseType}',
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 11.sp,
                   fontFamily: 'Comfortaa',
                 ),
               ),
@@ -194,8 +207,8 @@ class _FormAppState extends State<FormApp> {
         final formDoc = await formsCollection.add(
           {
             'userId': user.uid,
-            'title': formTitle,
-            'questions': questions.map((question) => question.text).toList(),
+            'formTitle': formTitle,
+            'questions': questions.map((question) => question.toMap()).toList(),
           },
         );
 
@@ -209,8 +222,8 @@ class _FormAppState extends State<FormApp> {
       } else {
         await formsCollection.doc(formDocId).update(
           {
-            'title': formTitle,
-            'questions': questions.map((question) => question.text).toList(),
+            'questions': questions.map((question) => question.toMap()).toList(),
+            'formTitle': formTitle,
           },
         );
 
@@ -220,50 +233,20 @@ class _FormAppState extends State<FormApp> {
       print('Failed to save/update form: $e');
     }
   }
-
-  Future<void> saveFormTitleToFirestore() async {
-    try {
-      final User? user = auth.currentUser;
-      if (user == null) {
-        print('User not logged in.');
-        return;
-      }
-
-      if (formDocId == null) {
-        final formDoc = await formsCollection.add(
-          {
-            'userId': user.uid,
-            'formTitle': formTitle,
-            'questions': [],
-          },
-        );
-
-        setState(
-          () {
-            formDocId = formDoc.id;
-          },
-        );
-
-        print('Form title saved to Firestore with ID: ${formDoc.id}');
-      } else {
-        await formsCollection.doc(formDocId).update(
-          {
-            'formTitle': formTitle,
-          },
-        );
-
-        print('Form title updated in Firestore with ID: $formDocId');
-      }
-    } catch (e) {
-      print('Failed to save/update form title: $e');
-    }
-  }
 }
 
 class Question {
   final String text;
+  final String responseType;
 
-  Question(this.text);
+  Question(this.text, this.responseType);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'responseType': responseType,
+    };
+  }
 }
 
 class QuestionDialog extends StatefulWidget {
@@ -280,16 +263,66 @@ class QuestionDialog extends StatefulWidget {
 
 class _QuestionDialogState extends State<QuestionDialog> {
   TextEditingController textEditingController = TextEditingController();
+  String dropdownValue = 'Text';
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Question'),
-      content: TextField(
-        controller: textEditingController,
-        decoration: const InputDecoration(
-          hintText: 'Enter question',
+      backgroundColor: const Color.fromARGB(255, 35, 37, 43),
+      title: Text(
+        'Add Question',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 17.sp,
+          fontFamily: 'Comfortaa',
+          fontWeight: FontWeight.bold,
         ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+              hintText: 'Enter question',
+              hintStyle: TextStyle(
+                fontFamily: 'Comfortaa',
+                fontSize: 12.sp,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          SizedBox(height: 1.h),
+          Text(
+            'Response type',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Comfortaa',
+              fontSize: 11.sp,
+            ),
+          ),
+          DropdownButton<String>(
+            value: dropdownValue,
+            icon: const Icon(Icons.arrow_drop_down),
+            style: const TextStyle(color: Colors.black),
+            onChanged: (String? newValue) {
+              setState(() {
+                dropdownValue = newValue!;
+              });
+            },
+            items: <String>[
+              'Text',
+              'Image',
+              'Multiple Choice (One)',
+              'Multiple Choice (Multiple)'
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ],
       ),
       actions: [
         TextButton(
@@ -300,7 +333,8 @@ class _QuestionDialogState extends State<QuestionDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            final question = Question(textEditingController.text);
+            final question =
+                Question(textEditingController.text, dropdownValue);
             widget.onQuestionAdded(question);
 
             Future.delayed(const Duration(milliseconds: 300), () {
