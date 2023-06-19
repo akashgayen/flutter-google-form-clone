@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sizer/sizer.dart';
 import 'makeform.dart';
 
@@ -11,7 +13,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isTapped = false;
+  final CollectionReference formsCollection =
+      FirebaseFirestore.instance.collection('forms');
+
   @override
   Widget build(BuildContext context) {
     return Sizer(
@@ -38,13 +42,71 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          body: Center(
-            child: Column(
-              children: const [
-                Text(
-                  "USER LOGGED IN",
-                ),
-              ],
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              child: Column(
+                children: [
+                  Text(
+                    "Hello ${FirebaseAuth.instance.currentUser?.displayName}",
+                    style: TextStyle(
+                      fontFamily: 'Comfortaa',
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Text(
+                    'Forms:',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Comfortaa',
+                      fontSize: 10.sp,
+                    ),
+                  ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: getFormsStream(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const Text('Error');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      final forms = snapshot.data?.docs ?? [];
+
+                      if (forms.isEmpty) {
+                        return const Center(child: Text('No forms found.'));
+                      }
+
+                      return SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: forms.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final formDocument = forms[index];
+                            final formId = formDocument.id;
+                            final formTitle =
+                                formDocument['formTitle'] as String;
+
+                            return ListTile(
+                              title: Text(formTitle),
+                              onTap: () {
+                                // Handle form selection
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           drawer: Drawer(
@@ -127,7 +189,11 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Fluttertoast.showToast(
+                        msg: 'HHEEHEHEHE',
+                      );
+                    },
                   ),
                   ListTile(
                     splashColor: Colors.blue,
@@ -146,6 +212,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
+                      Fluttertoast.showToast(
+                        msg: 'Logged out!',
+                      );
                     },
                   ),
                 ],
@@ -155,5 +224,16 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Stream<QuerySnapshot> getFormsStream() {
+    final currentUserID = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserID == null) {
+      return const Stream<QuerySnapshot>.empty();
+    }
+
+    return formsCollection
+        .where('userId', isEqualTo: currentUserID)
+        .snapshots();
   }
 }

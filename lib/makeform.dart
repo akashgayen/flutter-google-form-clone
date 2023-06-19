@@ -1,12 +1,12 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sizer/sizer.dart';
 
 class FormApp extends StatefulWidget {
-  const FormApp({Key? key}) : super(key: key);
+  const FormApp({super.key});
 
   @override
   State<FormApp> createState() => _FormAppState();
@@ -91,6 +91,7 @@ class _FormAppState extends State<FormApp> {
               child: Text(
                 'SAVE',
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontFamily: 'Comfortaa',
                   fontSize: 13.sp,
                   color: const Color.fromARGB(255, 28, 95, 255),
@@ -169,13 +170,23 @@ class _FormAppState extends State<FormApp> {
   Future<void> _deleteQuestion(int index) async {
     final User? user = auth.currentUser;
     if (user == null) {
-      print('User not logged in.');
+      Fluttertoast.showToast(
+        msg: 'You are not logged in',
+        // toastLength: Toast.LENGTH_SHORT,
+        // gravity: ToastGravity.CENTER,
+        // timeInSecForIosWeb: 1,
+        // backgroundColor: Colors.red,
+        // textColor: Colors.white,
+        // fontSize: 16.0,
+      );
       return;
     }
 
     try {
       if (formDocId == null) {
-        print('Form document ID not found.');
+        Fluttertoast.showToast(
+          msg: 'Form not found',
+        );
         return;
       }
 
@@ -189,9 +200,25 @@ class _FormAppState extends State<FormApp> {
         questions.removeAt(index);
       });
 
-      print('Question deleted from Firestore and app.');
+      Fluttertoast.showToast(
+        msg: 'Question deleted',
+        // toastLength: Toast.LENGTH_SHORT,
+        // gravity: ToastGravity.CENTER,
+        // timeInSecForIosWeb: 1,
+        // backgroundColor: Colors.red,
+        // textColor: Colors.white,
+        // fontSize: 16.0,
+      );
     } catch (e) {
-      print('Failed to delete question: $e');
+      Fluttertoast.showToast(
+        msg: 'Question was not deleted',
+        // toastLength: Toast.LENGTH_SHORT,
+        // gravity: ToastGravity.CENTER,
+        // timeInSecForIosWeb: 1,
+        // backgroundColor: Colors.red,
+        // textColor: Colors.white,
+        // fontSize: 16.0,
+      );
     }
   }
 
@@ -199,7 +226,9 @@ class _FormAppState extends State<FormApp> {
     try {
       final User? user = auth.currentUser;
       if (user == null) {
-        print('User not logged in.');
+        Fluttertoast.showToast(
+          msg: 'You are not logged in!',
+        );
         return;
       }
 
@@ -218,7 +247,9 @@ class _FormAppState extends State<FormApp> {
           },
         );
 
-        print('Form saved to Firestore with ID: ${formDoc.id}');
+        Fluttertoast.showToast(
+          msg: 'Form saved',
+        );
       } else {
         await formsCollection.doc(formDocId).update(
           {
@@ -227,10 +258,14 @@ class _FormAppState extends State<FormApp> {
           },
         );
 
-        print('Form updated in Firestore with ID: $formDocId');
+        Fluttertoast.showToast(
+          msg: 'Form updated',
+        );
       }
     } catch (e) {
-      print('Failed to save/update form: $e');
+      Fluttertoast.showToast(
+        msg: 'Form not saved',
+      );
     }
   }
 }
@@ -262,7 +297,7 @@ class QuestionDialog extends StatefulWidget {
 }
 
 class _QuestionDialogState extends State<QuestionDialog> {
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController questionController = TextEditingController();
   String dropdownValue = 'Text';
 
   @override
@@ -273,7 +308,7 @@ class _QuestionDialogState extends State<QuestionDialog> {
         'Add Question',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 17.sp,
+          fontSize: 19.sp,
           fontFamily: 'Comfortaa',
           fontWeight: FontWeight.bold,
         ),
@@ -282,45 +317,100 @@ class _QuestionDialogState extends State<QuestionDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: textEditingController,
+            controller: questionController,
+            style: TextStyle(
+              fontFamily: 'Comfortaa',
+              fontSize: 13.sp,
+              color: Colors.white,
+            ),
+            cursorColor: const Color.fromARGB(255, 28, 95, 255),
             decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(10),
+                ),
+                borderSide: BorderSide(
+                  width: 2.5.sp,
+                  color: const Color.fromARGB(255, 66, 70, 81),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(17),
+                ),
+                borderSide: BorderSide(
+                  width: 2.5.sp,
+                  color: const Color.fromARGB(255, 28, 95, 255),
+                ),
+              ),
+              filled: true,
+              fillColor: const Color.fromARGB(255, 43, 47, 58),
               hintText: 'Enter question',
-              hintStyle: TextStyle(
+              hintStyle: const TextStyle(
                 fontFamily: 'Comfortaa',
-                fontSize: 12.sp,
-                color: Colors.white,
+                color: Color.fromARGB(255, 114, 121, 132),
               ),
             ),
           ),
-          SizedBox(height: 1.h),
+          SizedBox(height: 2.h),
           Text(
-            'Response type',
+            'Select response type',
             style: TextStyle(
               color: Colors.white,
               fontFamily: 'Comfortaa',
-              fontSize: 11.sp,
+              fontSize: 13.sp,
             ),
           ),
-          DropdownButton<String>(
-            value: dropdownValue,
-            icon: const Icon(Icons.arrow_drop_down),
-            style: const TextStyle(color: Colors.black),
-            onChanged: (String? newValue) {
-              setState(() {
-                dropdownValue = newValue!;
-              });
-            },
-            items: <String>[
-              'Text',
-              'Image',
-              'Multiple Choice (One)',
-              'Multiple Choice (Multiple)'
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+          SizedBox(
+            height: 1.h,
+          ),
+          Container(
+            padding: EdgeInsetsDirectional.only(start: 2.w),
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 43, 47, 58),
+              border: Border.all(
+                color: const Color.fromARGB(255, 66, 70, 81),
+                width: 2.5.sp,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButton<String>(
+              dropdownColor: const Color.fromARGB(255, 43, 47, 58),
+              isExpanded: true,
+              underline: Container(
+                height: 0,
+              ),
+              value: dropdownValue,
+              icon: const Icon(
+                Icons.arrow_drop_down,
+              ),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.sp,
+                fontFamily: 'Comfortaa',
+              ),
+              onChanged: (String? newValue) {
+                setState(
+                  () {
+                    dropdownValue = newValue!;
+                  },
+                );
+              },
+              items: <String>[
+                'Text',
+                'Image',
+                'Multiple Choice (One)',
+                'Multiple Choice (Multiple)'
+              ].map<DropdownMenuItem<String>>(
+                (String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                },
+              ).toList(),
+            ),
           ),
         ],
       ),
@@ -329,19 +419,48 @@ class _QuestionDialogState extends State<QuestionDialog> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              fontFamily: 'Comfortaa',
+              fontWeight: FontWeight.bold,
+              fontSize: 11.sp,
+              color: const Color.fromARGB(255, 65, 105, 225),
+            ),
+          ),
         ),
         ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+              const Color.fromARGB(255, 65, 105, 225),
+            ),
+          ),
           onPressed: () {
-            final question =
-                Question(textEditingController.text, dropdownValue);
+            final question = Question(questionController.text, dropdownValue);
             widget.onQuestionAdded(question);
 
             Future.delayed(const Duration(milliseconds: 300), () {
               Navigator.pop(context);
             });
+            Fluttertoast.showToast(
+              msg: 'Form updated',
+              // toastLength: Toast.LENGTH_SHORT,
+              // gravity: ToastGravity.CENTER,
+              // timeInSecForIosWeb: 1,
+              // backgroundColor: Colors.red,
+              // textColor: Colors.white,
+              // fontSize: 16.0,
+            );
           },
-          child: const Text('Add'),
+          child: Text(
+            'Add',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11.sp,
+              fontFamily: 'Comfortaa',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );

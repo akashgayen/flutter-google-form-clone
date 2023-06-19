@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sizer/sizer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({super.key});
@@ -24,15 +25,20 @@ class GoogleAuth {
 
     try {
       UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+          await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
 
-      // Save the user's email to Firestore
       saveUserEmailToFirestore(userCredential.user?.email);
-      // print('EMAIL SAVED!!!');
 
+      Fluttertoast.showToast(
+        msg: "Logged in as\n${FirebaseAuth.instance.currentUser?.email}",
+      );
       return userCredential;
     } catch (error) {
-      print('Error signing in with Google: $error');
+      Fluttertoast.showToast(
+        msg: 'Error signing in with Google: $error',
+      );
       return null;
     }
   }
