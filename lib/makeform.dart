@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,20 +7,20 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sizer/sizer.dart';
 
-class FormApp extends StatefulWidget {
-  const FormApp({super.key});
+class FormPage extends StatefulWidget {
+  const FormPage({super.key});
 
   @override
-  State<FormApp> createState() => _FormAppState();
+  State<FormPage> createState() => _FormPageState();
 }
 
-class _FormAppState extends State<FormApp> {
+class _FormPageState extends State<FormPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference formsCollection =
       FirebaseFirestore.instance.collection('forms');
   final FirebaseAuth auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
-
+  bool isRequired = false;
   List<Question> questions = [];
   String? formDocId;
   String? formTitle = 'Untitled form';
@@ -40,7 +42,7 @@ class _FormAppState extends State<FormApp> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.fromLTRB(16, 3.h, 16, 16),
         children: [
           ListTile(
             title: TextField(
@@ -60,6 +62,8 @@ class _FormAppState extends State<FormApp> {
                 fontSize: 13.sp,
               ),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color.fromARGB(255, 43, 47, 58),
                 hintText: 'Form Title',
                 hintStyle: TextStyle(
                   color: Colors.white54,
@@ -71,7 +75,7 @@ class _FormAppState extends State<FormApp> {
                     Radius.circular(10),
                   ),
                   borderSide: BorderSide(
-                    width: 2.5.sp,
+                    width: 2.sp,
                     color: const Color.fromARGB(255, 66, 70, 81),
                   ),
                 ),
@@ -80,7 +84,7 @@ class _FormAppState extends State<FormApp> {
                     Radius.circular(17),
                   ),
                   borderSide: BorderSide(
-                    width: 2.5.sp,
+                    width: 2.sp,
                     color: const Color.fromARGB(255, 28, 95, 255),
                   ),
                 ),
@@ -99,14 +103,22 @@ class _FormAppState extends State<FormApp> {
               ),
             ),
           ),
+          SizedBox(
+            height: 1.h,
+          ),
           for (int i = 0; i < questions.length; i++)
             ListTile(
-              title: Text(
-                '${i + 1}. ${questions[i].text}',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13.sp,
-                  fontFamily: 'Comfortaa',
+              title: Padding(
+                padding: EdgeInsets.only(
+                  bottom: 0.5.h,
+                ),
+                child: Text(
+                  '${i + 1}. ${questions[i].text}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13.5.sp,
+                    fontFamily: 'Comfortaa',
+                  ),
                 ),
               ),
               subtitle: Text(
@@ -119,9 +131,9 @@ class _FormAppState extends State<FormApp> {
               ),
               trailing: IconButton(
                 icon: Icon(
-                  Icons.delete_forever_rounded,
+                  Icons.cancel_outlined,
                   color: Colors.red,
-                  size: 20.sp,
+                  size: 18.sp,
                 ),
                 onPressed: () {
                   _deleteQuestion(i);
@@ -172,12 +184,6 @@ class _FormAppState extends State<FormApp> {
     if (user == null) {
       Fluttertoast.showToast(
         msg: 'You are not logged in',
-        // toastLength: Toast.LENGTH_SHORT,
-        // gravity: ToastGravity.CENTER,
-        // timeInSecForIosWeb: 1,
-        // backgroundColor: Colors.red,
-        // textColor: Colors.white,
-        // fontSize: 16.0,
       );
       return;
     }
@@ -190,34 +196,20 @@ class _FormAppState extends State<FormApp> {
         return;
       }
 
-      // Remove question from Firestore
       await formsCollection.doc(formDocId).update({
         'questions': FieldValue.arrayRemove([questions[index].text]),
       });
 
-      // Remove question from the app's memory
       setState(() {
         questions.removeAt(index);
       });
 
       Fluttertoast.showToast(
         msg: 'Question deleted',
-        // toastLength: Toast.LENGTH_SHORT,
-        // gravity: ToastGravity.CENTER,
-        // timeInSecForIosWeb: 1,
-        // backgroundColor: Colors.red,
-        // textColor: Colors.white,
-        // fontSize: 16.0,
       );
     } catch (e) {
       Fluttertoast.showToast(
         msg: 'Question was not deleted',
-        // toastLength: Toast.LENGTH_SHORT,
-        // gravity: ToastGravity.CENTER,
-        // timeInSecForIosWeb: 1,
-        // backgroundColor: Colors.red,
-        // textColor: Colors.white,
-        // fontSize: 16.0,
       );
     }
   }
@@ -238,6 +230,7 @@ class _FormAppState extends State<FormApp> {
             'userId': user.uid,
             'formTitle': formTitle,
             'questions': questions.map((question) => question.toMap()).toList(),
+            'timestamp': FieldValue.serverTimestamp(),
           },
         );
 
@@ -273,13 +266,19 @@ class _FormAppState extends State<FormApp> {
 class Question {
   final String text;
   final String responseType;
+  final bool isRequired;
 
-  Question(this.text, this.responseType);
+  Question(
+    this.text,
+    this.responseType,
+    this.isRequired,
+  );
 
   Map<String, dynamic> toMap() {
     return {
       'text': text,
       'responseType': responseType,
+      'isRequired': isRequired,
     };
   }
 }
@@ -299,7 +298,7 @@ class QuestionDialog extends StatefulWidget {
 class _QuestionDialogState extends State<QuestionDialog> {
   TextEditingController questionController = TextEditingController();
   String dropdownValue = 'Text';
-
+  bool isRequired = false;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -330,7 +329,7 @@ class _QuestionDialogState extends State<QuestionDialog> {
                   Radius.circular(10),
                 ),
                 borderSide: BorderSide(
-                  width: 2.5.sp,
+                  width: 2.sp,
                   color: const Color.fromARGB(255, 66, 70, 81),
                 ),
               ),
@@ -339,7 +338,7 @@ class _QuestionDialogState extends State<QuestionDialog> {
                   Radius.circular(17),
                 ),
                 borderSide: BorderSide(
-                  width: 2.5.sp,
+                  width: 2.sp,
                   color: const Color.fromARGB(255, 28, 95, 255),
                 ),
               ),
@@ -412,6 +411,41 @@ class _QuestionDialogState extends State<QuestionDialog> {
               ).toList(),
             ),
           ),
+          SizedBox(
+            height: 1.h,
+          ),
+          Row(
+            children: [
+              Checkbox(
+                shape: const CircleBorder(eccentricity: sqrt1_2),
+                checkColor: Colors.white,
+                activeColor: Colors.red,
+                value: isRequired,
+                onChanged: (value) {
+                  setState(() {
+                    isRequired = value ?? true;
+                  });
+                },
+              ),
+              Text(
+                'Required',
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  fontFamily: 'Comfortaa',
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                '*',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 12.sp,
+                  fontFamily: 'Comfortaa',
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ],
+          ),
         ],
       ),
       actions: [
@@ -436,7 +470,8 @@ class _QuestionDialogState extends State<QuestionDialog> {
             ),
           ),
           onPressed: () {
-            final question = Question(questionController.text, dropdownValue);
+            final question =
+                Question(questionController.text, dropdownValue, isRequired);
             widget.onQuestionAdded(question);
 
             Future.delayed(const Duration(milliseconds: 300), () {
