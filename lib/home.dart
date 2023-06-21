@@ -51,7 +51,10 @@ class _HomePageState extends State<HomePage> {
           ),
           body: Padding(
             padding: EdgeInsets.all(14.sp),
-            child: SizedBox(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                decelerationRate: ScrollDecelerationRate.fast,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

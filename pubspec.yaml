@@ -46,6 +46,8 @@ dependencies:
   fluttertoast: ^8.2.2
   intl: ^0.18.1
   custom_field_styles: ^0.1.0
+  image_picker: ^0.8.9
+  firebase_storage: ^11.2.3
 
 dev_dependencies:
   flutter_test:
