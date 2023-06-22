@@ -267,36 +267,18 @@ class _QuestionDialogState extends State<QuestionDialog> {
         Fluttertoast.showToast(msg: 'file not uploaded');
       }
       if (pickedImage != null) {
-        // Get a reference to the Firebase Storage bucket
         final storageRef = firebase_storage.FirebaseStorage.instance.ref();
 
-        // Create a unique filename for the image
         final String imageName =
             DateTime.now().millisecondsSinceEpoch.toString();
         final imageRef = storageRef.child('images/$imageName');
 
-        // Upload the image file to Firebase Storage
-        final uploadTask = await imageRef.putFile(File(pickedImage.path));
+        await imageRef.putFile(File(pickedImage.path));
 
-        // Monitor the upload progress if needed
-        // uploadTask.snapshotEvents.listen((event) {
-        //   final progress = event.bytesTransferred / event.totalBytes;
-        //   print('Upload progress: ${progress * 100}%');
-        // });
-
-        // Wait for the upload to complete
-
-        // Get the download URL for the uploaded image
-        final String imageUrl = await imageRef.getDownloadURL.toString();
-
-        // Use the imageUrl as needed (e.g., save it to Firestore)
-
-        // Optionally, you can also delete the local file after uploading
-        // File(pickedImage.path).delete();
+        imageUrl = await imageRef.getDownloadURL();
       }
     } catch (error) {
-      print('Error uploading image: $error');
-      // Handle the error appropriately (e.g., show an error message to the user)
+      Fluttertoast.showToast(msg: 'File not uploaded');
     }
   }
 }

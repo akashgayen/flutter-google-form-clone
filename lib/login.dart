@@ -44,11 +44,17 @@ class GoogleAuth {
   Future<void> saveUserEmailToFirestore(String? email) async {
     if (email != null) {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      String? userName = FirebaseAuth.instance.currentUser?.displayName;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .set({'email': email}, SetOptions(merge: true));
+      await FirebaseFirestore.instance.collection('users').doc(userId).set(
+        {
+          'email': email,
+          'userName': userName,
+        },
+        SetOptions(
+          merge: true,
+        ),
+      );
     }
   }
 }

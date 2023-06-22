@@ -1,14 +1,10 @@
-import 'dart:math';
-import 'dart:io';
-import 'formdialogbox.dart';
+import 'makeformdialogbox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class FormPage extends StatefulWidget {
   const FormPage({super.key});

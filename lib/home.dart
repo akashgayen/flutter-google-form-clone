@@ -100,12 +100,12 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(20),
                             color: const Color.fromARGB(255, 43, 47, 58),
                             border: Border.all(
-                              width: 2.sp,
+                              width: 1,
                               color: const Color.fromARGB(255, 66, 70, 81),
                               style: BorderStyle.solid,
                             ),
                           ),
-                          height: 40.h,
+                          height: 8.5.h,
                           width: double.maxFinite,
                           child: Center(
                             child: Text(
@@ -120,20 +120,17 @@ class _HomePageState extends State<HomePage> {
                         );
                       }
                       return SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: const Color.fromARGB(255, 43, 47, 58),
-                            border: Border.all(
-                              width: 2.sp,
-                              color: const Color.fromARGB(255, 66, 70, 81),
-                              style: BorderStyle.solid,
-                            ),
+                          padding: const EdgeInsets.all(0),
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
                           ),
-                          height: 40.h,
+                          height: forms.length > 5
+                              ? 47.h
+                              : forms.length * (8.8.h + 0.75.h),
                           child: ListView.builder(
-                            itemCount: forms.length,
+                            itemCount: forms.length > 5 ? 5 : forms.length,
                             itemBuilder: (BuildContext context, int index) {
                               final formDocument = forms[index];
                               final formId = formDocument.id;
@@ -173,35 +170,64 @@ class _HomePageState extends State<HomePage> {
                                       formatter.format(formTimeStamp);
                                 }
                               }
-                              return ListTile(
-                                title: Padding(
-                                  padding: EdgeInsets.only(bottom: 0.75.h),
-                                  child: Text(
-                                    formTitle,
-                                    style: TextStyle(
-                                      fontFamily: 'Comfortaa',
-                                      fontSize: 14.sp,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                              return Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        width: 1,
+                                        color: const Color.fromARGB(
+                                            255, 66, 70, 81),
+                                      ),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: SizedBox(
+                                      height: 8.5.h,
+                                      child: ListTile(
+                                        tileColor: const Color.fromARGB(
+                                            255, 43, 47, 58),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                        ),
+                                        title: Padding(
+                                          padding: EdgeInsets.only(
+                                            bottom: 0.75.h,
+                                          ),
+                                          child: Text(
+                                            formTitle,
+                                            style: TextStyle(
+                                              fontFamily: 'Comfortaa',
+                                              fontSize: 14.sp,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          formattedTimeStamp,
+                                          style: TextStyle(
+                                              fontSize: 11.sp,
+                                              fontFamily: 'Comfortaa',
+                                              color: Colors.white30),
+                                        ),
+                                        trailing: IconButton(
+                                          icon: Icon(
+                                            Icons.cancel_outlined,
+                                            color: Colors.red,
+                                            size: 18.sp,
+                                          ),
+                                          onPressed: () => _deleteForm(formId),
+                                        ),
+                                        onTap: () {},
+                                      ),
                                     ),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  formattedTimeStamp,
-                                  style: TextStyle(
-                                      fontSize: 11.sp,
-                                      fontFamily: 'Comfortaa',
-                                      color: Colors.white30),
-                                ),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.cancel_outlined,
-                                    color: Colors.red,
-                                    size: 18.sp,
-                                  ),
-                                  onPressed: () => _deleteForm(formId),
-                                ),
-                                onTap: () {},
+                                  SizedBox(
+                                    height: 0.75.h,
+                                  )
+                                ],
                               );
                             },
                           ),
@@ -241,82 +267,110 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.library_books,
-                      color: Colors.white,
-                      size: 17.sp,
-                    ),
-                    title: Text(
-                      'Make form',
-                      style: TextStyle(
-                        fontFamily: 'Comfortaa',
+                  Card(
+                    color: const Color.fromARGB(255, 43, 47, 58),
+                    elevation: 6,
+                    shadowColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.library_books,
                         color: Colors.white,
-                        fontSize: 17.sp,
+                        size: 17.sp,
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FormPage(),
+                      title: Text(
+                        'Make form',
+                        style: TextStyle(
+                          fontFamily: 'Comfortaa',
+                          color: Colors.white,
+                          fontSize: 17.sp,
                         ),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.edit,
-                      size: 17.sp,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      'Fill form',
-                      style: TextStyle(
-                        fontFamily: 'Comfortaa',
-                        color: Colors.white,
-                        fontSize: 17.sp,
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FormPage(),
+                          ),
+                        );
+                      },
                     ),
-                    onTap: () {},
                   ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.account_circle_sharp,
-                      size: 17.sp,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      "Account",
-                      style: TextStyle(
-                        fontFamily: 'Comfortaa',
-                        fontSize: 17.sp,
+                  Card(
+                    color: const Color.fromARGB(255, 43, 47, 58),
+                    elevation: 6,
+                    shadowColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.edit,
+                        size: 17.sp,
                         color: Colors.white,
                       ),
-                    ),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    splashColor: Colors.blue,
-                    leading: Icon(
-                      Icons.logout_rounded,
-                      size: 17.sp,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      'Logout',
-                      style: TextStyle(
-                        fontFamily: 'Comfortaa',
-                        color: Colors.white,
-                        fontSize: 17.sp,
+                      title: Text(
+                        'Fill form',
+                        style: TextStyle(
+                          fontFamily: 'Comfortaa',
+                          color: Colors.white,
+                          fontSize: 17.sp,
+                        ),
                       ),
+                      onTap: () {},
                     ),
-                    onTap: () {
-                      FirebaseAuth.instance.signOut();
-                      Fluttertoast.showToast(
-                        msg: 'Logged out!',
-                      );
-                    },
+                  ),
+                  Card(
+                    color: const Color.fromARGB(255, 43, 47, 58),
+                    elevation: 6,
+                    shadowColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.account_circle_sharp,
+                        size: 17.sp,
+                        color: Colors.white,
+                      ),
+                      title: Text(
+                        "Account",
+                        style: TextStyle(
+                          fontFamily: 'Comfortaa',
+                          fontSize: 17.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+                  Card(
+                    color: const Color.fromARGB(255, 43, 47, 58),
+                    elevation: 6,
+                    shadowColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: ListTile(
+                      splashColor: Colors.blue,
+                      leading: Icon(
+                        Icons.logout_rounded,
+                        size: 17.sp,
+                        color: Colors.white,
+                      ),
+                      title: Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontFamily: 'Comfortaa',
+                          color: Colors.white,
+                          fontSize: 17.sp,
+                        ),
+                      ),
+                      onTap: () {
+                        FirebaseAuth.instance.signOut();
+                        Fluttertoast.showToast(
+                          msg: 'Logged out!',
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
