@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_forms_clone/fillform.dart';
+import 'package:google_forms_clone/viewform.dart';
 import 'package:sizer/sizer.dart';
 import 'makeform.dart';
 import 'package:intl/intl.dart';
@@ -220,7 +222,16 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                           onPressed: () => _deleteForm(formId),
                                         ),
-                                        onTap: () {},
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ViewForm(
+                                                formId: formId,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
@@ -317,7 +328,14 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 17.sp,
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FillForm(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Card(
