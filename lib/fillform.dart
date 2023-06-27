@@ -107,14 +107,19 @@ class _FillFormState extends State<FillForm> {
                   height: 2.h,
                 ),
                 ElevatedButton(
+                  style: ButtonStyle(
+                    fixedSize:
+                        MaterialStateProperty.all<Size>(Size(100.w, 6.h)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      const Color.fromARGB(255, 65, 105, 225),
+                    ),
+                  ),
                   onPressed: () {},
                   child: Text(
                     'Search',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.sp,
                       fontFamily: 'Comfortaa',
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15.sp,
                     ),
                   ),
                 ),

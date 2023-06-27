@@ -51,8 +51,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          body: Padding(
-            padding: EdgeInsets.all(14.sp),
+          body: Container(
+            width: 100.w,
+            padding: EdgeInsets.all(10.sp),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(
                 decelerationRate: ScrollDecelerationRate.fast,
@@ -123,124 +124,127 @@ class _HomePageState extends State<HomePage> {
                       }
                       return SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
                         child: Container(
-                          padding: const EdgeInsets.all(0),
-                          decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                          ),
-                          height: forms.length > 5
-                              ? 47.h
-                              : forms.length * (8.8.h + 0.75.h),
-                          child: ListView.builder(
-                            itemCount: forms.length > 5 ? 5 : forms.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final formDocument = forms[index];
-                              final formId = formDocument.id;
-                              final formTitle =
-                                  formDocument['formTitle'] as String;
-                              final timeStamp =
-                                  formDocument['timestamp'] as Timestamp;
-                              final formTimeStamp = timeStamp.toDate();
-                              final currentTimeStamp = DateTime.now();
-                              String formattedTimeStamp;
-                              if (formTimeStamp.year == currentTimeStamp.year &&
-                                  formTimeStamp.month ==
-                                      currentTimeStamp.month &&
-                                  formTimeStamp.day == currentTimeStamp.day) {
-                                final formTimeStampTime = DateFormat.Hm()
-                                    .format(formTimeStamp)
-                                    .toString();
-                                formattedTimeStamp =
-                                    'Today, $formTimeStampTime';
-                              } else {
-                                if (currentTimeStamp
-                                        .difference(formTimeStamp)
-                                        .inDays ==
-                                    1) {
-                                  formattedTimeStamp = 'Yesterday';
-                                } else if (currentTimeStamp
-                                        .difference(formTimeStamp)
-                                        .inDays <
-                                    7) {
-                                  final daysAgo = currentTimeStamp
-                                      .difference(formTimeStamp)
-                                      .inDays;
-                                  formattedTimeStamp = '$daysAgo days ago';
-                                } else {
-                                  final formatter = DateFormat('dd MMM yyyy');
+                          padding: EdgeInsets.symmetric(horizontal: 0.1.w),
+                          child: Row(
+                            children: forms.map(
+                              (formDocument) {
+                                final formId = formDocument.id;
+                                final formTitle =
+                                    formDocument['formTitle'] as String;
+                                final timeStamp =
+                                    formDocument['timestamp'] as Timestamp;
+                                final formTimeStamp = timeStamp.toDate();
+                                final currentTimeStamp = DateTime.now();
+                                String formattedTimeStamp;
+                                if (formTimeStamp.year ==
+                                        currentTimeStamp.year &&
+                                    formTimeStamp.month ==
+                                        currentTimeStamp.month &&
+                                    formTimeStamp.day == currentTimeStamp.day) {
+                                  final formTimeStampTime = DateFormat.Hm()
+                                      .format(formTimeStamp)
+                                      .toString();
                                   formattedTimeStamp =
-                                      formatter.format(formTimeStamp);
+                                      'Today, $formTimeStampTime';
+                                } else {
+                                  if (currentTimeStamp
+                                          .difference(formTimeStamp)
+                                          .inDays <=
+                                      1) {
+                                    formattedTimeStamp = 'Yesterday';
+                                  } else if (currentTimeStamp
+                                              .difference(formTimeStamp)
+                                              .inDays <
+                                          7 &&
+                                      currentTimeStamp
+                                              .difference(formTimeStamp)
+                                              .inDays >
+                                          1) {
+                                    final daysAgo = currentTimeStamp
+                                        .difference(formTimeStamp)
+                                        .inDays;
+                                    formattedTimeStamp = '$daysAgo days ago';
+                                  } else {
+                                    final formatter = DateFormat('dd MMM yyyy');
+                                    formattedTimeStamp =
+                                        formatter.format(formTimeStamp);
+                                  }
                                 }
-                              }
-                              return Column(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1,
-                                        color: const Color.fromARGB(
-                                            255, 66, 70, 81),
+                                return Padding(
+                                  padding: EdgeInsets.all(1.w),
+                                  child: SizedBox(
+                                    width: 70.w,
+                                    child: Card(
+                                      color: Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
                                       ),
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: SizedBox(
-                                      height: 8.5.h,
-                                      child: ListTile(
-                                        tileColor: const Color.fromARGB(
-                                            255, 43, 47, 58),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            15,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 2.sp,
+                                            color: const Color.fromARGB(
+                                                255, 66, 70, 81),
                                           ),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
-                                        title: Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: 0.75.h,
+                                        child: ListTile(
+                                          tileColor: const Color.fromARGB(
+                                              255, 43, 47, 58),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                           ),
-                                          child: Text(
-                                            formTitle,
-                                            style: TextStyle(
-                                              fontFamily: 'Comfortaa',
-                                              fontSize: 14.sp,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          formattedTimeStamp,
-                                          style: TextStyle(
-                                              fontSize: 11.sp,
-                                              fontFamily: 'Comfortaa',
-                                              color: Colors.white30),
-                                        ),
-                                        trailing: IconButton(
-                                          icon: Icon(
-                                            Icons.cancel_outlined,
-                                            color: Colors.red,
-                                            size: 18.sp,
-                                          ),
-                                          onPressed: () => _deleteForm(formId),
-                                        ),
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => ViewForm(
-                                                formId: formId,
+                                          title: Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 0.75.h),
+                                            child: Text(
+                                              formTitle,
+                                              style: TextStyle(
+                                                fontFamily: 'Comfortaa',
+                                                fontSize: 14.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                          );
-                                        },
+                                          ),
+                                          subtitle: Text(
+                                            formattedTimeStamp,
+                                            style: TextStyle(
+                                              fontSize: 11.sp,
+                                              fontFamily: 'Comfortaa',
+                                              color: Colors.white30,
+                                            ),
+                                          ),
+                                          trailing: IconButton(
+                                            icon: Icon(
+                                              Icons.cancel_outlined,
+                                              color: Colors.red,
+                                              size: 18.sp,
+                                            ),
+                                            onPressed: () =>
+                                                _deleteForm(formId),
+                                          ),
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ViewForm(
+                                                  formId: formId,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 0.75.h,
-                                  )
-                                ],
-                              );
-                            },
+                                );
+                              },
+                            ).toList(),
                           ),
                         ),
                       );

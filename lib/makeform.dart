@@ -144,7 +144,7 @@ class _FormPageState extends State<FormPage> {
           ),
           ElevatedButton(
             style: ButtonStyle(
-              fixedSize: MaterialStateProperty.all<Size>(Size(2.w, 57)),
+              fixedSize: MaterialStateProperty.all<Size>(Size(100.w, 6.5.h)),
               backgroundColor: MaterialStateProperty.all<Color>(
                 const Color.fromARGB(255, 65, 105, 225),
               ),
