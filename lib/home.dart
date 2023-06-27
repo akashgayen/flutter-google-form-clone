@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(
-                    height: 2.h,
+                    height: 1.h,
                   ),
                   StreamBuilder<QuerySnapshot>(
                     stream: getFormsStream(),
@@ -172,73 +172,68 @@ class _HomePageState extends State<HomePage> {
                                         formatter.format(formTimeStamp);
                                   }
                                 }
-                                return Padding(
-                                  padding: EdgeInsets.all(1.w),
-                                  child: SizedBox(
-                                    width: 70.w,
-                                    child: Card(
-                                      color: Colors.transparent,
-                                      shape: RoundedRectangleBorder(
+                                return SizedBox(
+                                  width: 70.w,
+                                  child: Card(
+                                    color: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          width: 2.sp,
+                                          color: const Color.fromARGB(
+                                              255, 66, 70, 81),
+                                        ),
                                         borderRadius: BorderRadius.circular(15),
                                       ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            width: 2.sp,
-                                            color: const Color.fromARGB(
-                                                255, 66, 70, 81),
-                                          ),
+                                      child: ListTile(
+                                        tileColor: const Color.fromARGB(
+                                            255, 43, 47, 58),
+                                        shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(15),
+                                              BorderRadius.circular(12),
                                         ),
-                                        child: ListTile(
-                                          tileColor: const Color.fromARGB(
-                                              255, 43, 47, 58),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          title: Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 0.75.h),
-                                            child: Text(
-                                              formTitle,
-                                              style: TextStyle(
-                                                fontFamily: 'Comfortaa',
-                                                fontSize: 14.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          subtitle: Text(
-                                            formattedTimeStamp,
+                                        title: Padding(
+                                          padding:
+                                              EdgeInsets.only(bottom: 0.75.h),
+                                          child: Text(
+                                            formTitle,
                                             style: TextStyle(
-                                              fontSize: 11.sp,
                                               fontFamily: 'Comfortaa',
-                                              color: Colors.white30,
+                                              fontSize: 14.sp,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          trailing: IconButton(
-                                            icon: Icon(
-                                              Icons.cancel_outlined,
-                                              color: Colors.red,
-                                              size: 18.sp,
-                                            ),
-                                            onPressed: () =>
-                                                _deleteForm(formId),
-                                          ),
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => ViewForm(
-                                                  formId: formId,
-                                                ),
-                                              ),
-                                            );
-                                          },
                                         ),
+                                        subtitle: Text(
+                                          formattedTimeStamp,
+                                          style: TextStyle(
+                                            fontSize: 11.sp,
+                                            fontFamily: 'Comfortaa',
+                                            color: Colors.white30,
+                                          ),
+                                        ),
+                                        trailing: IconButton(
+                                          icon: Icon(
+                                            Icons.cancel_outlined,
+                                            color: Colors.red,
+                                            size: 18.sp,
+                                          ),
+                                          onPressed: () => _deleteForm(formId),
+                                        ),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ViewForm(
+                                                formId: formId,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
