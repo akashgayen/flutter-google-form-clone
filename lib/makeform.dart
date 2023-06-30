@@ -267,12 +267,14 @@ class Question {
   final String responseType;
   final bool isRequired;
   final String? imageUrl;
+  final List<String> options;
 
   Question(
     this.text,
     this.responseType,
     this.isRequired,
     this.imageUrl,
+    this.options,
   );
 
   Map<String, dynamic> toMap() {
@@ -281,6 +283,7 @@ class Question {
       'responseType': responseType,
       'isRequired': isRequired,
       'imageUrl': imageUrl,
+      'options': options,
     };
   }
 }

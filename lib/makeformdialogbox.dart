@@ -26,6 +26,11 @@ class _QuestionDialogState extends State<QuestionDialog> {
   String dropdownValue = 'Text';
   bool isRequired = false;
   String imageUrl = '';
+  bool showMakeOptionButton = false;
+  List<TextField> optionsTextField = [];
+  List<String> options = [];
+  List<TextEditingController> optionsController = [];
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -39,177 +44,311 @@ class _QuestionDialogState extends State<QuestionDialog> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: questionController,
-            style: TextStyle(
-              fontFamily: 'Comfortaa',
-              fontSize: 13.sp,
-              color: Colors.white,
-            ),
-            cursorColor: const Color.fromARGB(255, 28, 95, 255),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
-                borderSide: BorderSide(
-                  width: 2.sp,
-                  color: const Color.fromARGB(255, 66, 70, 81),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(17),
-                ),
-                borderSide: BorderSide(
-                  width: 2.sp,
-                  color: const Color.fromARGB(255, 28, 95, 255),
-                ),
-              ),
-              filled: true,
-              fillColor: const Color.fromARGB(255, 43, 47, 58),
-              hintText: 'Enter question',
-              hintStyle: const TextStyle(
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: questionController,
+              style: TextStyle(
                 fontFamily: 'Comfortaa',
-                color: Color.fromARGB(255, 114, 121, 132),
+                fontSize: 13.sp,
+                color: Colors.white,
+              ),
+              cursorColor: const Color.fromARGB(255, 28, 95, 255),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  borderSide: BorderSide(
+                    width: 2.sp,
+                    color: const Color.fromARGB(255, 66, 70, 81),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(17),
+                  ),
+                  borderSide: BorderSide(
+                    width: 2.sp,
+                    color: const Color.fromARGB(255, 28, 95, 255),
+                  ),
+                ),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 43, 47, 58),
+                hintText: 'Enter question',
+                hintStyle: const TextStyle(
+                  fontFamily: 'Comfortaa',
+                  color: Color.fromARGB(255, 114, 121, 132),
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 2.h),
-          Text(
-            'Select response type',
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Comfortaa',
-              fontSize: 13.sp,
-            ),
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          Container(
-            padding: EdgeInsetsDirectional.only(start: 2.w),
-            width: 100.w,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 43, 47, 58),
-              border: Border.all(
-                color: const Color.fromARGB(255, 66, 70, 81),
-                width: 2.5.sp,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: DropdownButton<String>(
-              dropdownColor: const Color.fromARGB(255, 43, 47, 58),
-              isExpanded: true,
-              underline: Container(
-                height: 0,
-              ),
-              value: dropdownValue,
-              icon: const Icon(
-                Icons.arrow_drop_down,
-              ),
+            SizedBox(height: 2.h),
+            Text(
+              'Select response type',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 12.sp,
                 fontFamily: 'Comfortaa',
+                fontSize: 13.sp,
               ),
-              onChanged: (String? newValue) {
-                setState(
-                  () {
-                    dropdownValue = newValue!;
-                  },
-                );
-              },
-              items: <String>[
-                'Text',
-                'Image',
-                'Multiple Choice (One)',
-                'Multiple Choice (Multiple)'
-              ].map<DropdownMenuItem<String>>(
-                (String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
+            ),
+            SizedBox(
+              height: 1.h,
+            ),
+            Container(
+              padding: EdgeInsetsDirectional.only(start: 2.w),
+              width: 100.w,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 43, 47, 58),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 66, 70, 81),
+                  width: 2.5.sp,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: DropdownButton<String>(
+                dropdownColor: const Color.fromARGB(255, 43, 47, 58),
+                isExpanded: true,
+                underline: Container(
+                  height: 0,
+                ),
+                value: dropdownValue,
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.sp,
+                  fontFamily: 'Comfortaa',
+                ),
+                onChanged: (String? newValue) {
+                  setState(
+                    () {
+                      dropdownValue = newValue!;
+                      showMakeOptionButton =
+                          newValue == 'Multiple Choice (One)';
+                    },
                   );
                 },
-              ).toList(),
-            ),
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                const Color.fromARGB(255, 65, 105, 225),
+                items: <String>[
+                  'Text',
+                  'Image',
+                  'Multiple Choice (One)',
+                  'Multiple Choice (Multiple)'
+                ].map<DropdownMenuItem<String>>(
+                  (String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  },
+                ).toList(),
               ),
             ),
-            onPressed: () {
-              uploadImageToFirebaseStorage();
-            },
-            child: SizedBox(
-              width: 40.w,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            SizedBox(
+              height: 1.h,
+            ),
+            if (showMakeOptionButton)
+              Column(
                 children: [
+                  SizedBox(
+                    height: 1.h,
+                  ),
                   Text(
-                    'Add an image',
+                    'Add options',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 11.sp,
                       fontFamily: 'Comfortaa',
+                      fontSize: 13.sp,
                     ),
                   ),
                   SizedBox(
-                    width: 5.w,
+                    height: 1.h,
                   ),
-                  Icon(
-                    Icons.image_rounded,
-                    size: 17.sp,
+                  Column(
+                    children:
+                        List<Widget>.generate(optionsTextField.length, (index) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 1.h),
+                        child: Row(
+                          children: [
+                            Expanded(child: optionsTextField[index]),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  optionsTextField.removeAt(index);
+                                  options.removeAt(index);
+                                  optionsController.removeAt(index);
+                                });
+                                Fluttertoast.showToast(msg: 'Choice deleted!');
+                              },
+                              icon: Icon(
+                                Icons.delete_forever,
+                                color: Colors.red,
+                                size: 20.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        optionsController.add(TextEditingController());
+                        optionsTextField.add(
+                          TextField(
+                            controller: optionsController.last,
+                            style: TextStyle(
+                              fontFamily: 'Comfortaa',
+                              fontSize: 13.sp,
+                              color: Colors.white,
+                            ),
+                            cursorColor: const Color.fromARGB(255, 28, 95, 255),
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  final optionText =
+                                      optionsController.last.text;
+                                  if (!options.contains(optionText)) {
+                                    setState(() {
+                                      options.add(optionText);
+                                    });
+                                    Fluttertoast.showToast(
+                                        msg: 'Choice saved!');
+                                  } else {
+                                    setState(() {
+                                      options.add('');
+                                    });
+                                    Fluttertoast.showToast(
+                                      toastLength: Toast.LENGTH_LONG,
+                                      msg:
+                                          'Same choice already exists, choice not saved!',
+                                    );
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                borderSide: BorderSide(
+                                  width: 2.sp,
+                                  color: const Color.fromARGB(255, 66, 70, 81),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(17),
+                                ),
+                                borderSide: BorderSide(
+                                  width: 2.sp,
+                                  color: const Color.fromARGB(255, 28, 95, 255),
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color.fromARGB(255, 43, 47, 58),
+                              hintText: 'Enter options',
+                              hintStyle: const TextStyle(
+                                fontFamily: 'Comfortaa',
+                                color: Color.fromARGB(255, 114, 121, 132),
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                    },
+                    child: Text(
+                      optionsTextField.isEmpty
+                          ? 'Add option'
+                          : 'Add another option',
+                      style: TextStyle(
+                        fontFamily: 'Comfortaa',
+                        color: const Color.fromARGB(255, 65, 105, 225),
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
                 ],
               ),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color.fromARGB(255, 65, 105, 225),
+                ),
+              ),
+              onPressed: () {
+                uploadImageToFirebaseStorage();
+              },
+              child: SizedBox(
+                width: 40.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Add an image',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.sp,
+                        fontFamily: 'Comfortaa',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    Icon(
+                      Icons.image_rounded,
+                      size: 17.sp,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          Row(
-            children: [
-              Checkbox(
-                shape: const CircleBorder(eccentricity: sqrt1_2),
-                overlayColor: const MaterialStatePropertyAll<Color?>(
-                  Colors.white,
+            Row(
+              children: [
+                Checkbox(
+                  shape: const CircleBorder(eccentricity: sqrt1_2),
+                  overlayColor: const MaterialStatePropertyAll<Color?>(
+                    Colors.white,
+                  ),
+                  checkColor: Colors.white,
+                  activeColor: Colors.red,
+                  value: isRequired,
+                  onChanged: (value) {
+                    setState(() {
+                      isRequired = value ?? false;
+                    });
+                  },
                 ),
-                checkColor: Colors.white,
-                activeColor: Colors.red,
-                value: isRequired,
-                onChanged: (value) {
-                  setState(() {
-                    isRequired = value ?? false;
-                  });
-                },
-              ),
-              Text(
-                'Required',
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  fontFamily: 'Comfortaa',
-                  color: Colors.white,
+                Text(
+                  'Required',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontFamily: 'Comfortaa',
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                '*',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 12.sp,
-                  fontFamily: 'Comfortaa',
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            ],
-          ),
-        ],
+                Text(
+                  '*',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12.sp,
+                    fontFamily: 'Comfortaa',
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -234,14 +373,19 @@ class _QuestionDialogState extends State<QuestionDialog> {
           ),
           onPressed: () {
             final question = Question(
-                questionController.text, dropdownValue, isRequired, imageUrl);
+              questionController.text,
+              dropdownValue,
+              isRequired,
+              imageUrl,
+              options,
+            );
             widget.onQuestionAdded(question);
 
             Future.delayed(const Duration(milliseconds: 300), () {
               Navigator.pop(context);
             });
             Fluttertoast.showToast(
-              msg: 'Form updated',
+              msg: 'Question added',
             );
           },
           child: Text(

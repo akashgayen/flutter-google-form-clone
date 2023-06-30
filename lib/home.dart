@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_forms_clone/fillform.dart';
+import 'package:google_forms_clone/fillformdialogbox.dart';
 import 'package:google_forms_clone/viewform.dart';
 import 'package:sizer/sizer.dart';
 import 'makeform.dart';
@@ -328,11 +328,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FillForm(),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (context) => const FillFormDialogBox(),
                         );
                       },
                     ),
