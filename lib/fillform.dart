@@ -16,6 +16,9 @@ class _FillFormState extends State<FillForm> {
   late String formTitle;
   late List questions;
   late String questionText;
+  late String creatorId;
+  late String creatorName;
+  late String creatorEmail;
 
   @override
   void initState() {
@@ -34,7 +37,21 @@ class _FillFormState extends State<FillForm> {
     if (snapshot.exists) {
       formTitle = snapshot.data()!['formTitle'] as String;
       questions = snapshot.data()!['questions'] as List;
-      // Extract and assign other fields as needed
+      creatorId = snapshot.data()!['userId'] as String;
+    }
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> fetchUserDetails() async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(creatorId)
+        .get();
+  }
+
+  void extractUserDetails(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    if (snapshot.exists) {
+      creatorName = snapshot.data()!['userName'] as String;
+      creatorEmail = snapshot.data()!['email'] as String;
     }
   }
 
@@ -91,78 +108,150 @@ class _FillFormState extends State<FillForm> {
 
           extractFormDetails(snapshot.data!);
 
-          return Container(
-            padding: EdgeInsets.all(
-              9.sp,
-            ),
-            child: Column(
-              children: [
-                Text(
-                  formTitle,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontFamily: 'Comfortaa',
-                    fontWeight: FontWeight.bold,
+          return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: fetchUserDetails(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (userSnapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error: ${userSnapshot.error}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontFamily: 'Comfortaa',
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 1.h),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: questions.length,
-                    itemBuilder: (context, index) {
-                      final question = questions[index];
-                      final questionText = question['text'] as String;
-                      final imageUrl = question['imageUrl'] as String;
-                      return Card(
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 2.sp,
-                              color: const Color.fromARGB(255, 66, 70, 81),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            tileColor: const Color.fromARGB(255, 43, 47, 58),
+                );
+              }
+
+              if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                return Center(
+                  child: Text(
+                    'User not found',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontFamily: 'Comfortaa',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
+
+              extractUserDetails(userSnapshot.data!);
+
+              return Container(
+                padding: EdgeInsets.all(9.sp),
+                child: Column(
+                  children: [
+                    Text(
+                      'Form creator: $creatorName ($creatorEmail)',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9.5.sp,
+                        fontFamily: 'Comfortaa',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    Text(
+                      formTitle,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontFamily: 'Comfortaa',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 1.h),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: questions.length,
+                        itemBuilder: (context, index) {
+                          final question = questions[index];
+                          final questionText = question['text'] as String;
+                          final imageUrl = question['imageUrl'] as String;
+                          final isRequired = question['isRequired'] as bool;
+                          final responseType =
+                              question['responseType'] as String;
+                          return Card(
+                            color: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            title: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 1.h,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 2.sp,
+                                  color: const Color.fromARGB(255, 66, 70, 81),
+                                ),
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              child: Text(
-                                questionText,
-                                style: TextStyle(
-                                  fontFamily: 'Comfortaa',
-                                  fontSize: 14.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                              child: ListTile(
+                                tileColor:
+                                    const Color.fromARGB(255, 43, 47, 58),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                title: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 1.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        questionText,
+                                        style: TextStyle(
+                                          fontFamily: 'Comfortaa',
+                                          fontSize: 14.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      isRequired
+                                          ? Text(
+                                              '*',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 20.sp,
+                                                fontFamily: 'Comfortaa',
+                                              ),
+                                            )
+                                          : const Text(
+                                              '',
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (imageUrl != '')
+                                      Image.network(
+                                        imageUrl,
+                                      ),
+                                    SizedBox(
+                                      height: 0.h,
+                                    ),
+                                    if (responseType == 'Text')
+                                      const TextField(),
+                                  ],
                                 ),
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (imageUrl != '')
-                                  Image.network(
-                                    imageUrl,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

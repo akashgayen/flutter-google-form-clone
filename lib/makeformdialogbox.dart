@@ -481,10 +481,12 @@ class _QuestionDialogState extends State<QuestionDialog> {
           onPressed: () {
             if (uploadedImageName != null) {
               deleteImageFromFirebaseStorage(uploadedImageName!);
-            }
-            Future.delayed(const Duration(milliseconds: 300), () {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Navigator.pop(context);
+              });
+            } else {
               Navigator.pop(context);
-            });
+            }
           },
           child: Text(
             'Cancel',
