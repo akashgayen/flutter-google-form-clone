@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 
 class FillForm extends StatefulWidget {
@@ -19,6 +23,8 @@ class _FillFormState extends State<FillForm> {
   late String creatorId;
   late String creatorName;
   late String creatorEmail;
+  String? selectedOption;
+  String? uploadedImageName;
 
   @override
   void initState() {
@@ -177,6 +183,7 @@ class _FillFormState extends State<FillForm> {
                           final questionText = question['text'] as String;
                           final imageUrl = question['imageUrl'] as String;
                           final isRequired = question['isRequired'] as bool;
+                          final options = question['options'] as List;
                           final responseType =
                               question['responseType'] as String;
                           return Card(
@@ -231,21 +238,141 @@ class _FillFormState extends State<FillForm> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (imageUrl != '')
-                                      Image.network(
-                                        imageUrl,
-                                      ),
+                                    imageUrl == ''
+                                        ? const SizedBox(
+                                            height: 0,
+                                          )
+                                        : Image.network(
+                                            imageUrl,
+                                          ),
                                     SizedBox(
-                                      height: 0.h,
+                                      height: 1.h,
                                     ),
                                     if (responseType == 'Text')
                                       const TextField(),
+                                    if (responseType == 'Image')
+                                      Center(
+                                        child: ElevatedButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(
+                                              const Color.fromARGB(
+                                                  255, 65, 105, 225),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            uploadImageToFirebaseStorage();
+                                          },
+                                          child: SizedBox(
+                                            width: 40.w,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Add image',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 11.sp,
+                                                    fontFamily: 'Comfortaa',
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5.w,
+                                                ),
+                                                Icon(
+                                                  Icons.image_rounded,
+                                                  size: 17.sp,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    SizedBox(
+                                      height: 1.h,
+                                    ),
+                                    if (uploadedImageName != null &&
+                                        responseType == 'Image')
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: const Color.fromARGB(
+                                                    255, 66, 70, 81),
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(5.sp),
+                                              child: Text(
+                                                'image_$uploadedImageName',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11.sp,
+                                                  fontFamily: 'Comfortaa',
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              deleteImageFromFirebaseStorage(
+                                                  uploadedImageName!);
+                                            },
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                              size: 17.sp,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    if (responseType == 'Multiple Choice (One)')
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: options.length,
+                                        itemBuilder: (context, index) {
+                                          final option = options[index];
+                                          return RadioListTile<String>(
+                                            title: Text(
+                                              option,
+                                              style: TextStyle(
+                                                fontFamily: 'Comfortaa',
+                                                fontSize: 14.sp,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            value: option,
+                                            groupValue: selectedOption,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedOption = value;
+                                              });
+                                            },
+                                            activeColor: Colors.white,
+                                            controlAffinity:
+                                                ListTileControlAffinity
+                                                    .trailing,
+                                          );
+                                        },
+                                      ),
                                   ],
                                 ),
                               ),
                             ),
                           );
                         },
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text(
+                        'SUBMIT',
                       ),
                     ),
                   ],
@@ -256,5 +383,46 @@ class _FillFormState extends State<FillForm> {
         },
       ),
     );
+  }
+
+  Future<void> uploadImageToFirebaseStorage() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? pickedImage =
+          await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage?.path == null) {
+        Fluttertoast.showToast(msg: 'file not uploaded');
+      }
+      if (pickedImage != null) {
+        final storageRef = FirebaseStorage.instance.ref();
+
+        final String imageName =
+            DateTime.now().millisecondsSinceEpoch.toString();
+        final imageRef = storageRef.child('images/$imageName');
+
+        await imageRef.putFile(File(pickedImage.path));
+
+        final imageUrl = await imageRef.getDownloadURL();
+        setState(() {
+          uploadedImageName = imageName;
+        });
+      }
+    } catch (error) {
+      Fluttertoast.showToast(msg: 'File not uploaded');
+    }
+  }
+
+  void deleteImageFromFirebaseStorage(String imageName) async {
+    try {
+      final storageRef =
+          FirebaseStorage.instance.ref('images/$uploadedImageName');
+      await storageRef.delete();
+      setState(() {
+        uploadedImageName = null;
+      });
+      Fluttertoast.showToast(msg: 'Image deleted');
+    } catch (error) {
+      Fluttertoast.showToast(msg: 'Failed to delete image');
+    }
   }
 }

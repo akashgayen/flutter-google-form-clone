@@ -65,65 +65,69 @@ class _FillFormDialogBoxState extends State<FillFormDialogBox> {
           SizedBox(
             height: 1.h,
           ),
-          ListTile(
-            title: TextField(
-              controller: formCodeController,
-              style: TextStyle(
-                fontFamily: 'Comfortaa',
-                fontSize: 13.sp,
-                color: Colors.white,
-              ),
-              cursorColor: const Color.fromARGB(255, 28, 95, 255),
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: formCodeController,
+                  style: TextStyle(
+                    fontFamily: 'Comfortaa',
+                    fontSize: 13.sp,
+                    color: Colors.white,
                   ),
-                  borderSide: BorderSide(
-                    width: 2.sp,
-                    color: const Color.fromARGB(255, 66, 70, 81),
+                  cursorColor: const Color.fromARGB(255, 28, 95, 255),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                      borderSide: BorderSide(
+                        width: 2.sp,
+                        color: const Color.fromARGB(255, 66, 70, 81),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(17),
+                      ),
+                      borderSide: BorderSide(
+                        width: 2.sp,
+                        color: const Color.fromARGB(255, 28, 95, 255),
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 43, 47, 58),
+                    hintText: 'Form code',
+                    hintStyle: const TextStyle(
+                      fontFamily: 'Comfortaa',
+                      color: Color.fromARGB(255, 114, 121, 132),
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(17),
-                  ),
-                  borderSide: BorderSide(
-                    width: 2.sp,
-                    color: const Color.fromARGB(255, 28, 95, 255),
-                  ),
-                ),
-                filled: true,
-                fillColor: const Color.fromARGB(255, 43, 47, 58),
-                hintText: 'Form code',
-                hintStyle: const TextStyle(
-                  fontFamily: 'Comfortaa',
-                  color: Color.fromARGB(255, 114, 121, 132),
-                ),
-              ),
-            ),
-            trailing: TextButton(
-              onPressed: () async {
-                ClipboardData? clipboardData =
-                    await Clipboard.getData(Clipboard.kTextPlain);
-                if (clipboardData != null && clipboardData.text != null) {
-                  setState(
-                    () {
-                      formCodeController.text = clipboardData.text!;
-                    },
-                  );
-                }
-              },
-              child: Text(
-                'PASTE',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 65, 105, 225),
-                  fontFamily: 'Comfortaa',
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
+              TextButton(
+                onPressed: () async {
+                  ClipboardData? clipboardData =
+                      await Clipboard.getData(Clipboard.kTextPlain);
+                  if (clipboardData != null && clipboardData.text != null) {
+                    setState(
+                      () {
+                        formCodeController.text = clipboardData.text!;
+                      },
+                    );
+                  }
+                },
+                child: Text(
+                  'PASTE',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 65, 105, 225),
+                    fontFamily: 'Comfortaa',
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(
             height: 1.h,
