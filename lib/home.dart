@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_forms_clone/accountpage.dart';
 import 'package:google_forms_clone/fillformdialogbox.dart';
 import 'package:google_forms_clone/viewform.dart';
 import 'package:sizer/sizer.dart';
@@ -355,7 +356,14 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountPage(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Card(

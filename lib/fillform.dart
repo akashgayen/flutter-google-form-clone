@@ -1,4 +1,6 @@
 import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,7 +25,7 @@ class _FillFormState extends State<FillForm> {
   late String creatorId;
   late String creatorName;
   late String creatorEmail;
-  String? selectedOption;
+  Map<String, dynamic> userResponses = {}; // Map to store user responses
   String? uploadedImageName;
 
   @override
@@ -249,7 +251,13 @@ class _FillFormState extends State<FillForm> {
                                       height: 1.h,
                                     ),
                                     if (responseType == 'Text')
-                                      const TextField(),
+                                      TextField(
+                                        onChanged: (value) {
+                                          // Update user response for text type question
+                                          userResponses[index.toString()] =
+                                              value;
+                                        },
+                                      ),
                                     if (responseType == 'Image')
                                       Center(
                                         child: ElevatedButton(
@@ -261,8 +269,14 @@ class _FillFormState extends State<FillForm> {
                                                   255, 65, 105, 225),
                                             ),
                                           ),
-                                          onPressed: () {
-                                            uploadImageToFirebaseStorage();
+                                          onPressed: () async {
+                                            // Get the downloadURL of the uploaded image
+                                            String downloadURL =
+                                                await uploadImageToFirebaseStorage();
+
+                                            // Update user response for image type question
+                                            userResponses[index.toString()] =
+                                                downloadURL;
                                           },
                                           child: SizedBox(
                                             width: 40.w,
@@ -334,7 +348,8 @@ class _FillFormState extends State<FillForm> {
                                     if (responseType == 'Multiple Choice (One)')
                                       ListView.builder(
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         itemCount: options.length,
                                         itemBuilder: (context, index) {
                                           final option = options[index];
@@ -348,10 +363,12 @@ class _FillFormState extends State<FillForm> {
                                               ),
                                             ),
                                             value: option,
-                                            groupValue: selectedOption,
+                                            groupValue:
+                                                userResponses[index.toString()],
                                             onChanged: (value) {
                                               setState(() {
-                                                selectedOption = value;
+                                                userResponses[
+                                                    index.toString()] = value;
                                               });
                                             },
                                             activeColor: Colors.white,
@@ -370,8 +387,11 @@ class _FillFormState extends State<FillForm> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
+                      onPressed: () {
+                        // Call a function to save user responses to Firestore
+                        saveResponsesToFirestore();
+                      },
+                      child: const Text(
                         'SUBMIT',
                       ),
                     ),
@@ -385,13 +405,14 @@ class _FillFormState extends State<FillForm> {
     );
   }
 
-  Future<void> uploadImageToFirebaseStorage() async {
+  Future<String> uploadImageToFirebaseStorage() async {
     try {
       final picker = ImagePicker();
       final XFile? pickedImage =
           await picker.pickImage(source: ImageSource.gallery);
       if (pickedImage?.path == null) {
         Fluttertoast.showToast(msg: 'file not uploaded');
+        return '';
       }
       if (pickedImage != null) {
         final storageRef = FirebaseStorage.instance.ref();
@@ -406,10 +427,13 @@ class _FillFormState extends State<FillForm> {
         setState(() {
           uploadedImageName = imageName;
         });
+        return imageUrl;
       }
     } catch (error) {
       Fluttertoast.showToast(msg: 'File not uploaded');
+      return '';
     }
+    return '';
   }
 
   void deleteImageFromFirebaseStorage(String imageName) async {
@@ -423,6 +447,35 @@ class _FillFormState extends State<FillForm> {
       Fluttertoast.showToast(msg: 'Image deleted');
     } catch (error) {
       Fluttertoast.showToast(msg: 'Failed to delete image');
+    }
+  }
+
+  Future<void> saveResponsesToFirestore() async {
+    try {
+      // Get the current user ID
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      final String docName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      Map<String, dynamic> formData = {
+        // Add other form fields here
+        'timestamp': DateTime.now(),
+        'user': userId,
+        // Save the timestamped image name
+      };
+
+      // Create a new document in the 'responses' collection with the user ID as the document ID
+      DocumentReference responseDocRef =
+          FirebaseFirestore.instance.collection('responses').doc(docName);
+
+      // Save the user responses to Firestore
+
+      await responseDocRef.set(formData, SetOptions(merge: true));
+      await responseDocRef.set(userResponses, SetOptions(merge: true));
+
+      // Show a toast to indicate successful submission
+      Fluttertoast.showToast(msg: 'Form submitted successfully!');
+    } catch (error) {
+      Fluttertoast.showToast(msg: 'Failed to submit form. Please try again.');
     }
   }
 }

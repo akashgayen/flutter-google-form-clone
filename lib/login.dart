@@ -22,6 +22,9 @@ class GoogleAuth {
     );
 
     try {
+      Fluttertoast.showToast(
+        msg: 'Logging in...',
+      );
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(
         credential,

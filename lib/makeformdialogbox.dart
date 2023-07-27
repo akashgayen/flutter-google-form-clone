@@ -134,11 +134,12 @@ class _QuestionDialogState extends State<QuestionDialog> {
                     },
                   );
                 },
-                items: <String>[
+                items: [
                   'Text',
                   'Image',
                   'Multiple Choice (One)',
-                  'Multiple Choice (Multiple)'
+                  'Multiple Choice (Multiple)',
+                  'File'
                 ].map<DropdownMenuItem<String>>(
                   (String value) {
                     return DropdownMenuItem<String>(
