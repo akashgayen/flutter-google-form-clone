@@ -25,7 +25,7 @@ class _FillFormState extends State<FillForm> {
   late String creatorId;
   late String creatorName;
   late String creatorEmail;
-  Map<String, dynamic> userResponses = {}; // Map to store user responses
+  Map<String, dynamic> userResponses = {};
   String? uploadedImageName;
 
   @override
@@ -253,7 +253,6 @@ class _FillFormState extends State<FillForm> {
                                     if (responseType == 'Text')
                                       TextField(
                                         onChanged: (value) {
-                                          // Update user response for text type question
                                           userResponses[index.toString()] =
                                               value;
                                         },
@@ -270,11 +269,9 @@ class _FillFormState extends State<FillForm> {
                                             ),
                                           ),
                                           onPressed: () async {
-                                            // Get the downloadURL of the uploaded image
                                             String downloadURL =
                                                 await uploadImageToFirebaseStorage();
 
-                                            // Update user response for image type question
                                             userResponses[index.toString()] =
                                                 downloadURL;
                                           },
@@ -387,12 +384,22 @@ class _FillFormState extends State<FillForm> {
                       ),
                     ),
                     ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                          const Color.fromARGB(255, 65, 105, 225),
+                        ),
+                      ),
                       onPressed: () {
-                        // Call a function to save user responses to Firestore
                         saveResponsesToFirestore();
                       },
-                      child: const Text(
-                        'SUBMIT',
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Comfortaa',
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -452,27 +459,29 @@ class _FillFormState extends State<FillForm> {
 
   Future<void> saveResponsesToFirestore() async {
     try {
-      // Get the current user ID
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
       final String docName = DateTime.now().millisecondsSinceEpoch.toString();
 
+      List<dynamic> responses = [];
+
+      for (int i = 0; i < questions.length; i++) {
+        String? response = userResponses[i.toString()];
+        responses.add(response);
+      }
+
       Map<String, dynamic> formData = {
-        // Add other form fields here
         'timestamp': DateTime.now(),
         'user': userId,
-        // Save the timestamped image name
+        'formId': widget.formCode,
+        'responses': responses,
       };
 
-      // Create a new document in the 'responses' collection with the user ID as the document ID
       DocumentReference responseDocRef =
           FirebaseFirestore.instance.collection('responses').doc(docName);
-
-      // Save the user responses to Firestore
 
       await responseDocRef.set(formData, SetOptions(merge: true));
       await responseDocRef.set(userResponses, SetOptions(merge: true));
 
-      // Show a toast to indicate successful submission
       Fluttertoast.showToast(msg: 'Form submitted successfully!');
     } catch (error) {
       Fluttertoast.showToast(msg: 'Failed to submit form. Please try again.');

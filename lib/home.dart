@@ -55,199 +55,272 @@ class _HomePageState extends State<HomePage> {
           body: Container(
             width: 100.w,
             padding: EdgeInsets.all(10.sp),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(
-                decelerationRate: ScrollDecelerationRate.fast,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Hello ${FirebaseAuth.instance.currentUser?.displayName}",
-                    style: TextStyle(
-                      fontFamily: 'Comfortaa',
-                      color: Colors.white,
-                      fontSize: 20.sp,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Hello ${FirebaseAuth.instance.currentUser?.displayName}",
+                  style: TextStyle(
+                    fontFamily: 'Comfortaa',
+                    color: Colors.white,
+                    fontSize: 20.sp,
                   ),
-                  SizedBox(
-                    height: 1.h,
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                Text(
+                  'Your forms are listed here',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Comfortaa',
+                    fontSize: 17.sp,
                   ),
-                  Text(
-                    'Your forms are listed here',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Comfortaa',
-                      fontSize: 17.sp,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  StreamBuilder<QuerySnapshot>(
-                    stream: getFormsStream(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return const Text('Error');
-                      }
+                ),
+                SizedBox(
+                  height: 1.h,
+                ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: getFormsStream(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return const Text('Error');
+                    }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
 
-                      final forms = snapshot.data?.docs ?? [];
+                    final forms = snapshot.data?.docs ?? [];
 
-                      if (forms.isEmpty) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: const Color.fromARGB(255, 43, 47, 58),
-                            border: Border.all(
-                              width: 1,
-                              color: const Color.fromARGB(255, 66, 70, 81),
-                              style: BorderStyle.solid,
-                            ),
+                    if (forms.isEmpty) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: const Color.fromARGB(255, 43, 47, 58),
+                          border: Border.all(
+                            width: 1,
+                            color: const Color.fromARGB(255, 66, 70, 81),
+                            style: BorderStyle.solid,
                           ),
-                          height: 8.5.h,
-                          width: double.maxFinite,
-                          child: Center(
-                            child: Text(
-                              'No forms found',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontFamily: 'Comfortaa',
-                                color: Colors.white54,
-                              ),
+                        ),
+                        height: 8.5.h,
+                        width: double.maxFinite,
+                        child: Center(
+                          child: Text(
+                            'No forms found',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontFamily: 'Comfortaa',
+                              color: Colors.white54,
                             ),
-                          ),
-                        );
-                      }
-                      return SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 0.1.w),
-                          child: Row(
-                            children: forms.map(
-                              (formDocument) {
-                                final formId = formDocument.id;
-                                final formTitle =
-                                    formDocument['formTitle'] as String;
-                                final timeStamp =
-                                    formDocument['timestamp'] as Timestamp;
-                                final formTimeStamp = timeStamp.toDate();
-                                final currentTimeStamp = DateTime.now();
-                                String formattedTimeStamp;
-                                if (formTimeStamp.year ==
-                                        currentTimeStamp.year &&
-                                    formTimeStamp.month ==
-                                        currentTimeStamp.month &&
-                                    formTimeStamp.day == currentTimeStamp.day) {
-                                  final formTimeStampTime = DateFormat.Hm()
-                                      .format(formTimeStamp)
-                                      .toString();
-                                  formattedTimeStamp =
-                                      'Today, $formTimeStampTime';
-                                } else {
-                                  if (currentTimeStamp
-                                          .difference(formTimeStamp)
-                                          .inDays <=
-                                      1) {
-                                    formattedTimeStamp = 'Yesterday';
-                                  } else if (currentTimeStamp
-                                              .difference(formTimeStamp)
-                                              .inDays <
-                                          7 &&
-                                      currentTimeStamp
-                                              .difference(formTimeStamp)
-                                              .inDays >
-                                          1) {
-                                    final daysAgo = currentTimeStamp
-                                        .difference(formTimeStamp)
-                                        .inDays;
-                                    formattedTimeStamp = '$daysAgo days ago';
-                                  } else {
-                                    final formatter = DateFormat('dd MMM yyyy');
-                                    formattedTimeStamp =
-                                        formatter.format(formTimeStamp);
-                                  }
-                                }
-                                return SizedBox(
-                                  width: 70.w,
-                                  child: Card(
-                                    color: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          width: 2.sp,
-                                          color: const Color.fromARGB(
-                                              255, 66, 70, 81),
-                                        ),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: ListTile(
-                                        tileColor: const Color.fromARGB(
-                                            255, 43, 47, 58),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        title: Padding(
-                                          padding:
-                                              EdgeInsets.only(bottom: 0.75.h),
-                                          child: Text(
-                                            formTitle,
-                                            style: TextStyle(
-                                              fontFamily: 'Comfortaa',
-                                              fontSize: 14.sp,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          formattedTimeStamp,
-                                          style: TextStyle(
-                                            fontSize: 11.sp,
-                                            fontFamily: 'Comfortaa',
-                                            color: Colors.white30,
-                                          ),
-                                        ),
-                                        trailing: IconButton(
-                                          icon: Icon(
-                                            Icons.cancel_outlined,
-                                            color: Colors.red,
-                                            size: 18.sp,
-                                          ),
-                                          onPressed: () => _deleteForm(formId),
-                                        ),
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => ViewForm(
-                                                formId: formId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ).toList(),
                           ),
                         ),
                       );
-                    },
-                  ),
-                ],
-              ),
+                    }
+                    return SizedBox(
+                      height: heightOfFormViewer(forms.length),
+                      child: ListView.builder(
+                        itemCount: forms.length,
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final formDocument = forms[index];
+                          final formId = formDocument.id;
+                          final formTitle = formDocument['formTitle'] as String;
+                          final timeStamp =
+                              formDocument['timestamp'] as Timestamp;
+                          final formTimeStamp = timeStamp.toDate();
+                          final currentTimeStamp = DateTime.now();
+                          String formattedTimeStamp;
+                          if (formTimeStamp.year == currentTimeStamp.year &&
+                              formTimeStamp.month == currentTimeStamp.month &&
+                              formTimeStamp.day == currentTimeStamp.day) {
+                            final formTimeStampTime = DateFormat.Hm()
+                                .format(formTimeStamp)
+                                .toString();
+                            formattedTimeStamp = 'Today, $formTimeStampTime';
+                          } else {
+                            if (currentTimeStamp
+                                    .difference(formTimeStamp)
+                                    .inDays <=
+                                1) {
+                              formattedTimeStamp = 'Yesterday';
+                            } else if (currentTimeStamp
+                                        .difference(formTimeStamp)
+                                        .inDays <
+                                    7 &&
+                                currentTimeStamp
+                                        .difference(formTimeStamp)
+                                        .inDays >
+                                    1) {
+                              final daysAgo = currentTimeStamp
+                                  .difference(formTimeStamp)
+                                  .inDays;
+                              formattedTimeStamp = '$daysAgo days ago';
+                            } else {
+                              final formatter = DateFormat('dd MMM yyyy');
+                              formattedTimeStamp =
+                                  formatter.format(formTimeStamp);
+                            }
+                          }
+                          return SizedBox(
+                            width: 70.w,
+                            child: Card(
+                              color: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 2.sp,
+                                    color:
+                                        const Color.fromARGB(255, 66, 70, 81),
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: ListTile(
+                                  tileColor:
+                                      const Color.fromARGB(255, 43, 47, 58),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  title: Padding(
+                                    padding: EdgeInsets.only(bottom: 0.75.h),
+                                    child: Text(
+                                      formTitle,
+                                      style: TextStyle(
+                                        fontFamily: 'Comfortaa',
+                                        fontSize: 14.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    formattedTimeStamp,
+                                    style: TextStyle(
+                                      fontSize: 11.sp,
+                                      fontFamily: 'Comfortaa',
+                                      color: Colors.white30,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    icon: Icon(
+                                      Icons.cancel_outlined,
+                                      color: Colors.red,
+                                      size: 18.sp,
+                                    ),
+                                    onPressed: () => _deleteForm(formId),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ViewForm(
+                                          formId: formId,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: 2.h,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            const Color.fromARGB(255, 65, 105, 225),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FormPage(),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          height: 6.h,
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.library_books,
+                                  size: 15.sp,
+                                ),
+                                Text(
+                                  'Make form',
+                                  style: TextStyle(
+                                    fontFamily: 'Comfortaa',
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            const Color.fromARGB(255, 65, 105, 225),
+                          ),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const FillFormDialogBox(),
+                          );
+                        },
+                        child: SizedBox(
+                          height: 6.h,
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.edit,
+                                  size: 15.sp,
+                                ),
+                                Text(
+                                  'Fill form',
+                                  style: TextStyle(
+                                    fontFamily: 'Comfortaa',
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           drawer: Drawer(
@@ -414,6 +487,14 @@ class _HomePageState extends State<HomePage> {
         .where('userId', isEqualTo: currentUserID)
         .orderBy('timestamp', descending: true)
         .snapshots();
+  }
+
+  double heightOfFormViewer(int noOfForms) {
+    if (noOfForms > 4) {
+      return 40.h;
+    } else {
+      return noOfForms * 9.5.h;
+    }
   }
 
   Future<void> _deleteForm(String formDocId) async {
