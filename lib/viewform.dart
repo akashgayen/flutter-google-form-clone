@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_forms_clone/responsepage.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/services.dart';
 
@@ -55,48 +56,127 @@ class _ViewFormState extends State<ViewForm> {
         actions: [
           IconButton(
             onPressed: () {
-              final formId = widget.formId;
-              showDialog(
+              showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    backgroundColor: const Color.fromARGB(255, 35, 37, 43),
-                    title: Text(
-                      'Form Code',
-                      style: TextStyle(
-                          fontFamily: 'Comfortaa',
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    content: Column(
+                  return Container(
+                    color: const Color.fromARGB(255, 35, 37, 43),
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'The code for this form is $formId',
-                          style: TextStyle(
-                            fontFamily: 'Comfortaa',
-                            fontSize: 15.sp,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 1.h),
-                        ElevatedButton(
-                          onPressed: () {
-                            copyFormIdToClipboard(formId);
-                            Navigator.of(context).pop();
+                        ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResponsePage(
+                                  formId: widget.formId,
+                                ),
+                              ),
+                            );
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          title: Row(
                             children: [
+                              Icon(
+                                Icons.list_alt,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 4.w,
+                              ),
                               Text(
-                                'Copy Code',
+                                'Responses',
                                 style: TextStyle(
                                   fontFamily: 'Comfortaa',
-                                  fontSize: 13.sp,
+                                  fontSize: 16.sp,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            final formId = widget.formId;
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 35, 37, 43),
+                                  title: Text(
+                                    'Form Code',
+                                    style: TextStyle(
+                                        fontFamily: 'Comfortaa',
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'The code for this form is $formId',
+                                        style: TextStyle(
+                                          fontFamily: 'Comfortaa',
+                                          fontSize: 15.sp,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(height: 1.h),
+                                      ElevatedButton(
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                            const Color.fromARGB(
+                                                255, 65, 105, 225),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          copyFormIdToClipboard(formId);
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Copy Code',
+                                              style: TextStyle(
+                                                fontFamily: 'Comfortaa',
+                                                fontSize: 13.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          title: Row(
+                            children: [
+                              Icon(
+                                Icons.share_outlined,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 4.w,
+                              ),
+                              Text(
+                                'Share',
+                                style: TextStyle(
+                                  fontFamily: 'Comfortaa',
+                                  fontSize: 16.sp,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -104,20 +184,12 @@ class _ViewFormState extends State<ViewForm> {
                         ),
                       ],
                     ),
-                    // actions: [
-                    //   ElevatedButton(
-                    //     onPressed: () {
-                    //       Navigator.of(context).pop();
-                    //     },
-                    //     child: Text('Close'),
-                    //   ),
-                    // ],
                   );
                 },
               );
             },
             icon: const Icon(
-              Icons.share_outlined,
+              Icons.menu_rounded,
             ),
           ),
         ],

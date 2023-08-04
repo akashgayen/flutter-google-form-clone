@@ -25,8 +25,9 @@ class _FillFormState extends State<FillForm> {
   late String creatorId;
   late String creatorName;
   late String creatorEmail;
-  Map<String, dynamic> userResponses = {};
+  Map<int, dynamic> userResponses = {};
   String? uploadedImageName;
+  Map<int, dynamic> _selectedOptionsMap = {};
 
   @override
   void initState() {
@@ -180,14 +181,15 @@ class _FillFormState extends State<FillForm> {
                     Expanded(
                       child: ListView.builder(
                         itemCount: questions.length,
-                        itemBuilder: (context, index) {
-                          final question = questions[index];
+                        itemBuilder: (context, questionIndex) {
+                          final question = questions[questionIndex];
                           final questionText = question['text'] as String;
                           final imageUrl = question['imageUrl'] as String;
                           final isRequired = question['isRequired'] as bool;
                           final options = question['options'] as List;
                           final responseType =
                               question['responseType'] as String;
+
                           return Card(
                             color: Colors.transparent,
                             shape: RoundedRectangleBorder(
@@ -253,8 +255,10 @@ class _FillFormState extends State<FillForm> {
                                     if (responseType == 'Text')
                                       TextField(
                                         onChanged: (value) {
-                                          userResponses[index.toString()] =
-                                              value;
+                                          setState(() {
+                                            userResponses[questionIndex] =
+                                                value;
+                                          });
                                         },
                                       ),
                                     if (responseType == 'Image')
@@ -262,8 +266,7 @@ class _FillFormState extends State<FillForm> {
                                         child: ElevatedButton(
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(
+                                                MaterialStateProperty.all(
                                               const Color.fromARGB(
                                                   255, 65, 105, 225),
                                             ),
@@ -272,8 +275,10 @@ class _FillFormState extends State<FillForm> {
                                             String downloadURL =
                                                 await uploadImageToFirebaseStorage();
 
-                                            userResponses[index.toString()] =
-                                                downloadURL;
+                                            setState(() {
+                                              userResponses[questionIndex] =
+                                                  downloadURL;
+                                            });
                                           },
                                           child: SizedBox(
                                             width: 40.w,
@@ -342,6 +347,54 @@ class _FillFormState extends State<FillForm> {
                                           ),
                                         ],
                                       ),
+                                    if (responseType ==
+                                        'Multiple Choice (Multiple)')
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: options.length,
+                                        itemBuilder: (context, index) {
+                                          final option = options[index];
+                                          final isSelected = _selectedOptionsMap
+                                                  .containsKey(questionIndex)
+                                              ? _selectedOptionsMap[
+                                                      questionIndex]!
+                                                  .contains(option)
+                                              : false;
+
+                                          return CheckboxListTile(
+                                            title: Text(
+                                              option,
+                                              style: TextStyle(
+                                                fontFamily: 'Comfortaa',
+                                                fontSize: 14.sp,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            value: isSelected,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                if (value == true) {
+                                                  _selectedOptionsMap
+                                                      .putIfAbsent(
+                                                          questionIndex,
+                                                          () => [])
+                                                      .add(option);
+                                                } else {
+                                                  _selectedOptionsMap[
+                                                          questionIndex]
+                                                      ?.remove(option);
+                                                }
+                                              });
+                                            },
+                                            activeColor: Colors.white,
+                                            controlAffinity:
+                                                ListTileControlAffinity
+                                                    .trailing,
+                                          );
+                                        },
+                                      ),
                                     if (responseType == 'Multiple Choice (One)')
                                       ListView.builder(
                                         shrinkWrap: true,
@@ -350,6 +403,7 @@ class _FillFormState extends State<FillForm> {
                                         itemCount: options.length,
                                         itemBuilder: (context, index) {
                                           final option = options[index];
+
                                           return RadioListTile<String>(
                                             title: Text(
                                               option,
@@ -360,12 +414,13 @@ class _FillFormState extends State<FillForm> {
                                               ),
                                             ),
                                             value: option,
+                                            toggleable: true,
                                             groupValue:
-                                                userResponses[index.toString()],
+                                                userResponses[questionIndex],
                                             onChanged: (value) {
                                               setState(() {
-                                                userResponses[
-                                                    index.toString()] = value;
+                                                userResponses[questionIndex] =
+                                                    value;
                                               });
                                             },
                                             activeColor: Colors.white,
@@ -462,28 +517,44 @@ class _FillFormState extends State<FillForm> {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
       final String docName = DateTime.now().millisecondsSinceEpoch.toString();
 
-      List<dynamic> responses = [];
+      Map<int, dynamic> allResponses = {};
 
       for (int i = 0; i < questions.length; i++) {
-        String? response = userResponses[i.toString()];
-        responses.add(response);
+        final question = questions[i];
+        final responseType = question['responseType'] as String;
+        List<String> options = List.from(question['options'] as List);
+
+        if (responseType == 'Multiple Choice (Multiple)') {
+          List<String> selectedOptions = _selectedOptionsMap[i] ?? [];
+          allResponses[i] = selectedOptions;
+        } else if (responseType == 'Multiple Choice (One)') {
+          String? selectedOption = userResponses[i];
+          if (options.contains(selectedOption)) {
+            allResponses[i] = selectedOption;
+          } else {
+            allResponses[i] = ''; // Invalid response, set to empty string
+          }
+        } else {
+          // Text Response
+          allResponses[i] = userResponses[i];
+        }
       }
 
       Map<String, dynamic> formData = {
         'timestamp': DateTime.now(),
         'user': userId,
         'formId': widget.formCode,
-        'responses': responses,
+        'responses': allResponses,
       };
 
       DocumentReference responseDocRef =
           FirebaseFirestore.instance.collection('responses').doc(docName);
 
       await responseDocRef.set(formData, SetOptions(merge: true));
-      await responseDocRef.set(userResponses, SetOptions(merge: true));
 
       Fluttertoast.showToast(msg: 'Form submitted successfully!');
     } catch (error) {
+      print(error);
       Fluttertoast.showToast(msg: 'Failed to submit form. Please try again.');
     }
   }
