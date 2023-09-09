@@ -378,7 +378,7 @@ class _FormPageState extends State<FormPage> {
         Fluttertoast.showToast(
           msg: 'Form saved',
         );
-      } else if (setDueDate == true) {
+      } else if (formDocId != null && setDueDate == true) {
         await formsCollection.doc(formDocId).update(
           {
             'questions': questions.map((question) => question.toMap()).toList(),
@@ -390,11 +390,31 @@ class _FormPageState extends State<FormPage> {
         Fluttertoast.showToast(
           msg: 'Form updated',
         );
+      } else if (formDocId == null && setDueDate == false) {
+        final formDoc = await formsCollection.add(
+          {
+            'userId': user.uid,
+            'formTitle': formTitle,
+            'questions': questions.map((question) => question.toMap()).toList(),
+            'timestamp': FieldValue.serverTimestamp(),
+            'dueDate': null,
+          },
+        );
+
+        setState(
+          () {
+            formDocId = formDoc.id;
+          },
+        );
+        Fluttertoast.showToast(
+          msg: 'Form saved',
+        );
       } else {
         await formsCollection.doc(formDocId).update(
           {
             'questions': questions.map((question) => question.toMap()).toList(),
             'formTitle': formTitle,
+            'dueDate': null,
           },
         );
 
