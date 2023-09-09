@@ -80,7 +80,7 @@ class _ResponsePageState extends State<ResponsePage> {
       ),
       body: Center(
         child: _loading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : _hasResponses
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
